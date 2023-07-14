@@ -2,7 +2,7 @@ name: 'hacs.json update'
 description: ''
 inputs:
   token:
-    required: false
+    required: true
     description: 'GitHub auth token'
     default: ${{ github.token }}
 
@@ -27,7 +27,7 @@ runs:
     
     - name: Read JSON file and set environment variables
       env:
-        JSON_FILE: ${{ github.workspace }}/hacss.json
+        JSON_FILE: ${{ github.workspace }}/hacs.json
       shell: bash
       run: |
         homeassistant=$(jq -r '.homeassistant' "${JSON_FILE}")
