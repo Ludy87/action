@@ -63,7 +63,7 @@ runs:
       if: steps.check_status.outputs.match != 'true'
       uses: peter-evans/create-pull-request@v5.0.2
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ inputs.token }}
         commit-message: Update hacs.json file
         committer: github-actions[bot] <action@github.com>
         author: github-actions[bot] <action@github.com>
