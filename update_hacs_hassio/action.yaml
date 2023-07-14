@@ -27,7 +27,7 @@ runs:
     
     - name: Read JSON file and set environment variables
       env:
-        JSON_FILE: ${{ github.workspace }}/hacs.json
+        JSON_FILE: hacs.json
       shell: bash
       run: |
         homeassistant=$(jq -r '.homeassistant' "${JSON_FILE}")
