@@ -3,17 +3,13 @@ name: Daily Update
 on:
     schedule:
         - cron: "0 0 * * *"
-    push:
-        branches:
-        - main
-
-permissions:
-    contents: write
-    pull-requests: write
 
 jobs:
   update:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3.5.3
@@ -43,12 +39,12 @@ jobs:
             if [ "${{ env.version_hacs }}" == "null" ] || [ "${{ env.version_hassio }}" == "null" ]; then
                 echo "match=true" >> $GITHUB_OUTPUT
             fi
-            if [ "${{ env.hacs }}" == "${{ env.version_hacs }}" ]; then
+            if [ "${{ env.hacs }}" = "${{ env.version_hacs }}" ]; then
                 echo "hacs_equal=${{ env.hacs }} (no update)" >> $GITHUB_ENV
             else
                 echo "hacs_equal=${{ env.hacs }} → ${{ env.version_hacs }}" >> $GITHUB_ENV
             fi
-            if [ "${{ env.homeassistant }}" == "${{ env.version_hassio }}" ]; then
+            if [ "${{ env.homeassistant }}" = "${{ env.version_hassio }}" ]; then
                 echo "hassio_equal=${{ env.homeassistant }} (no update)" >> $GITHUB_ENV
             else
                 echo "hassio_equal=${{ env.homeassistant }} → ${{ env.version_hassio }}" >> $GITHUB_ENV
@@ -57,8 +53,7 @@ jobs:
       - name: Update hacs.json file
         if: steps.check_status.outputs.match != 'true'
         run: |
-            python3 ${{ github.workspace }}/scripts/update/update_placeholder.py --hversion ${{ env.version_hassio }} --version ${{ env.version_hacs }}
-            # python3 ${{ github.workspace }}/scripts/update/hacs.py --hversion ${{ env.version_hassio }} --version ${{ env.version_hacs }}
+            python3 ${{ github.workspace }}/scripts/update/hacs.py --hversion ${{ env.version_hassio }} --version ${{ env.version_hacs }}
 
       - name: Create Pull Request
         if: steps.check_status.outputs.match != 'true'
@@ -66,12 +61,12 @@ jobs:
         with:
             token: ${{ secrets.GITHUB_TOKEN }}
             commit-message: Update hacs.json file
-            committer: GitHub Action <action@github.com>
-            author: GitHub Action <action@github.com>
-            signoff: false
+            committer: github-actions[bot] <action@github.com>
+            author: github-actions[bot] <action@github.com>
+            signoff: true
             branch: "update_hacs_hassio"
             delete-branch: true
-            title: '🔨 Update hacs.json file by <GitHub Action [bot]>'
+            title: '🔨 Update hacs.json file by <github-actions[bot]>'
             body: |
                 Update report
                 - HACS version: ${{ env.hacs_equal }}
