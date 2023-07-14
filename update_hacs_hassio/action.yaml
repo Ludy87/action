@@ -8,7 +8,6 @@ inputs:
 
 runs:
   using: composite
-  shell: bash
   steps:
     - name: Checkout repository
       uses: actions/checkout@v3.5.3
@@ -17,6 +16,7 @@ runs:
     
     - name: Get latest Home Assistant version
       id: hassversion
+      shell: bash
       run: |
         latest_version_homeassistant=$(curl -sL https://api.github.com/repos/home-assistant/core/releases/latest | jq -r '.tag_name' | sed -e 's/v//')
         echo "Latest version Home-Assistant: $latest_version_homeassistant"
@@ -28,6 +28,7 @@ runs:
     - name: Read JSON file and set environment variables
       env:
         JSON_FILE: ${{ github.workspace }}/hacs.json
+      shell: bash
       run: |
         homeassistant=$(jq -r '.homeassistant' "${JSON_FILE}")
         hacs=$(jq -r '.hacs' "${JSON_FILE}")
@@ -35,24 +36,26 @@ runs:
         echo "hacs=${hacs}" >> $GITHUB_ENV
     
     - name: Check status
-        id: check_status
-        run: |
-            if [ "${{ env.version_hacs }}" == "null" ] || [ "${{ env.version_hassio }}" == "null" ]; then
-                echo "match=true" >> $GITHUB_OUTPUT
-            fi
-            if [ "${{ env.hacs }}" = "${{ env.version_hacs }}" ]; then
-                echo "hacs_equal=${{ env.hacs }} (no update)" >> $GITHUB_ENV
-            else
-                echo "hacs_equal=${{ env.hacs }} → ${{ env.version_hacs }}" >> $GITHUB_ENV
-            fi
-            if [ "${{ env.homeassistant }}" = "${{ env.version_hassio }}" ]; then
-                echo "hassio_equal=${{ env.homeassistant }} (no update)" >> $GITHUB_ENV
-            else
-                echo "hassio_equal=${{ env.homeassistant }} → ${{ env.version_hassio }}" >> $GITHUB_ENV
-            fi
+      id: check_status
+      shell: bash
+      run: |
+          if [ "${{ env.version_hacs }}" == "null" ] || [ "${{ env.version_hassio }}" == "null" ]; then
+              echo "match=true" >> $GITHUB_OUTPUT
+          fi
+          if [ "${{ env.hacs }}" = "${{ env.version_hacs }}" ]; then
+              echo "hacs_equal=${{ env.hacs }} (no update)" >> $GITHUB_ENV
+          else
+              echo "hacs_equal=${{ env.hacs }} → ${{ env.version_hacs }}" >> $GITHUB_ENV
+          fi
+          if [ "${{ env.homeassistant }}" = "${{ env.version_hassio }}" ]; then
+              echo "hassio_equal=${{ env.homeassistant }} (no update)" >> $GITHUB_ENV
+          else
+              echo "hassio_equal=${{ env.homeassistant }} → ${{ env.version_hassio }}" >> $GITHUB_ENV
+          fi
     
     - name: Update hacs.json file
       if: steps.check_status.outputs.match != 'true'
+      shell: bash
       run: |
         python3 ${{ github.workspace }}/scripts/update/hacs.py --hversion ${{ env.version_hassio }} --version ${{ env.version_hacs }}
     
