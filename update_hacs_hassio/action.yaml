@@ -57,7 +57,7 @@ runs:
       if: steps.check_status.outputs.match != 'true'
       shell: bash
       run: |
-        python3 ${{ github.workspace }}/scripts/update/hacs.py --hversion ${{ env.version_hassio }} --version ${{ env.version_hacs }}
+        python3 ${{ github.action_path }}/scripts/update/hacs.py --hversion ${{ env.version_hassio }} --version ${{ env.version_hacs }}
     
     - name: Create Pull Request
       if: steps.check_status.outputs.match != 'true'
