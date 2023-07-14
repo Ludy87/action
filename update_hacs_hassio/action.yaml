@@ -30,7 +30,6 @@ runs:
         JSON_FILE: hacs.json
       shell: bash
       run: |
-        ls -la
         homeassistant=$(jq -r '.homeassistant' "${JSON_FILE}")
         hacs=$(jq -r '.hacs' "${JSON_FILE}")
         echo "homeassistant=${homeassistant}" >> $GITHUB_ENV
