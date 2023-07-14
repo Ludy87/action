@@ -6,7 +6,7 @@ import os
 import sys
 from pathlib import Path
 
-HACS_FILE = Path(f"{os.getcwd()}/hacs.json")
+HACS_FILE = Path(f"{os.getcwd()}/hacss.json")
 
 
 def update_hacs():
