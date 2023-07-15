@@ -20,11 +20,16 @@ runs:
         echo "Latest version HACS: $latest_version_hacs"
         echo "version_hacs=$latest_version_hacs" >> $GITHUB_ENV
     - name: Check if hacs.json file exists
+      id: hacs_json_exists
       shell: bash
-      run: test -f ${{ github.workspace }}/hacs.json
-      continue-on-error: true
+      run: |
+        if test -f ${{ github.workspace }}/hacs.json; then
+          echo "match=true" >> $GITHUB_ENV
+        else
+          echo "match=false" >> $GITHUB_ENV
+        fi
     - name: Read JSON file and set environment variables
-      if: success()
+      if: steps.hacs_json_exists.outputs.match == 'true'
       env:
         JSON_FILE: ${{ github.workspace }}/hacs.json
       shell: bash
@@ -35,7 +40,7 @@ runs:
         echo "hacs=${hacs}" >> $GITHUB_ENV
     
     - name: Check status
-      if: success()
+      if: steps.hacs_json_exists.outputs.match == 'true'
       id: check_status
       shell: bash
       run: |
@@ -54,13 +59,13 @@ runs:
           fi
     
     - name: Update hacs.json file
-      if: success() && steps.check_status.outputs.match != 'true'
+      if: steps.hacs_json_exists.outputs.match == 'true' && steps.check_status.outputs.match != 'true'
       shell: bash
       run: |
         python3 ${{ github.action_path }}/scripts/update/hacs.py --hversion ${{ env.version_hassio }} --version ${{ env.version_hacs }}
     
     - name: Create Pull Request
-      if: success() && steps.check_status.outputs.match != 'true'
+      if: steps.hacs_json_exists.outputs.match == 'true' && steps.check_status.outputs.match != 'true'
       uses: peter-evans/create-pull-request@v5.0.2
       with:
         token: ${{ inputs.token }}
