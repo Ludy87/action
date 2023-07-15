@@ -19,6 +19,9 @@ def update_hacs():
         if value in ["--hversion", "-hV"]:
             hassversion = sys.argv[index + 1]
 
+    if os.path.exists(HACS_FILE):
+        return
+
     with open(HACS_FILE, encoding="utf-8") as hacsfile:
         base: dict = json.load(hacsfile)
         base["homeassistant"] = hassversion
