@@ -12,7 +12,7 @@ inputs:
   base:
     description: ''
     required: false
-    default: 'base'
+    default: 'origin/main'
 
 runs:
   using: composite
