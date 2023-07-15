@@ -9,6 +9,10 @@ inputs:
     description: 'Comma-separated list of reviewers to add, if any'
     required: false
     default: 'Ludy87'
+  base:
+    description: ''
+    required: false
+    default: 'base'
 
 runs:
   using: composite
@@ -81,6 +85,7 @@ runs:
         author: GitHub Action <action@github.com>
         signoff: true
         branch: "update_hacs_hassio"
+        base: base
         title: '🔨 Update hacs.json file by <github-actions[bot]>'
         body: |
             Update report
