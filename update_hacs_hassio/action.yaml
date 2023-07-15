@@ -19,8 +19,11 @@ runs:
         latest_version_hacs=$(curl -sL https://api.github.com/repos/hacs/integration/releases/latest | jq -r '.tag_name' | sed -e 's/v//')
         echo "Latest version HACS: $latest_version_hacs"
         echo "version_hacs=$latest_version_hacs" >> $GITHUB_ENV
-    
+    - name: Check if hacs.json file exists
+      run: test -f ${{ github.workspace }}/hacs.json
+      continue-on-error: true
     - name: Read JSON file and set environment variables
+      if: success()
       env:
         JSON_FILE: ${{ github.workspace }}/hacs.json
       shell: bash
@@ -31,6 +34,7 @@ runs:
         echo "hacs=${hacs}" >> $GITHUB_ENV
     
     - name: Check status
+      if: success()
       id: check_status
       shell: bash
       run: |
@@ -49,13 +53,13 @@ runs:
           fi
     
     - name: Update hacs.json file
-      if: steps.check_status.outputs.match != 'true'
+      if: success() && steps.check_status.outputs.match != 'true'
       shell: bash
       run: |
         python3 ${{ github.action_path }}/scripts/update/hacs.py --hversion ${{ env.version_hassio }} --version ${{ env.version_hacs }}
     
     - name: Create Pull Request
-      if: steps.check_status.outputs.match != 'true'
+      if: success() && steps.check_status.outputs.match != 'true'
       uses: peter-evans/create-pull-request@v5.0.2
       with:
         token: ${{ inputs.token }}
