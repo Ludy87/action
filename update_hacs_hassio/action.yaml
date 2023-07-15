@@ -8,7 +8,16 @@ inputs:
 
 runs:
   using: composite
-  steps:    
+  steps:
+    - name: Check if hacs.json file exists
+      id: hacs_json_exists
+      shell: bash
+      run: |
+        if test -f ${{ github.workspace }}/hacs.json; then
+          echo "match=true" >> $GITHUB_ENV
+        else
+          echo "match=false" >> $GITHUB_ENV
+        fi
     - name: Get latest Home Assistant version
       id: hassversion
       shell: bash
@@ -19,15 +28,6 @@ runs:
         latest_version_hacs=$(curl -sL https://api.github.com/repos/hacs/integration/releases/latest | jq -r '.tag_name' | sed -e 's/v//')
         echo "Latest version HACS: $latest_version_hacs"
         echo "version_hacs=$latest_version_hacs" >> $GITHUB_ENV
-    - name: Check if hacs.json file exists
-      id: hacs_json_exists
-      shell: bash
-      run: |
-        if test -f ${{ github.workspace }}/hacs.json; then
-          echo "match=true" >> $GITHUB_ENV
-        else
-          echo "match=false" >> $GITHUB_ENV
-        fi
     - name: Read JSON file and set environment variables
       if: steps.hacs_json_exists.outputs.match == 'true'
       env:
