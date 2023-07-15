@@ -1,5 +1,6 @@
 name: 'hacs.json update'
-description: ''on:
+description: ''
+on:
   workflow_dispatch:
     inputs:
       token:
