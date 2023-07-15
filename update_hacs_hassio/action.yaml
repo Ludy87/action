@@ -93,5 +93,5 @@ runs:
             wait
             in progress
             bot
-        reviewers: reviewers: ${{ github.event.inputs.reviewers }}
+        reviewers: ${{ github.event.inputs.reviewers }}
         draft: false
