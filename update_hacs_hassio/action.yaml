@@ -20,6 +20,7 @@ runs:
         echo "Latest version HACS: $latest_version_hacs"
         echo "version_hacs=$latest_version_hacs" >> $GITHUB_ENV
     - name: Check if hacs.json file exists
+      shell: bash
       run: test -f ${{ github.workspace }}/hacs.json
       continue-on-error: true
     - name: Read JSON file and set environment variables
