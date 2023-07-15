@@ -6,7 +6,7 @@ on:
       token:
         required: false
         description: 'GitHub auth token'
-        default: ${{ github.token }}
+        default: ""
       reviewers:
         description: 'Comma-separated list of reviewers to add, if any'
         required: false
