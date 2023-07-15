@@ -1,20 +1,18 @@
 name: 'hacs.json update'
 description: ''
-on:
-  workflow_dispatch:
-    inputs:
-      token:
-        required: false
-        description: 'GitHub auth token'
-        default: ""
-      reviewers:
-        description: 'Comma-separated list of reviewers to add, if any'
-        required: false
-        default: 'Ludy87'
-      base:
-        description: ''
-        required: false
-        default: main
+inputs:
+  token:
+    required: false
+    description: 'GitHub auth token'
+    default: ${{ github.token }}
+  reviewers:
+    description: 'Comma-separated list of reviewers to add, if any'
+    required: false
+    default: 'Ludy87'
+  base:
+    description: ''
+    required: false
+    default: main
 
 runs:
   using: composite
