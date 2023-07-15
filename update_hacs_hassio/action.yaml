@@ -18,6 +18,7 @@ runs:
         else
           echo "HACS_JSON_EXISTS=false" >> $GITHUB_ENV
         fi
+
     - name: Get latest Home Assistant version
       id: hassversion
       shell: bash
@@ -28,6 +29,7 @@ runs:
         latest_version_hacs=$(curl -sL https://api.github.com/repos/hacs/integration/releases/latest | jq -r '.tag_name' | sed -e 's/v//')
         echo "Latest version HACS: $latest_version_hacs"
         echo "version_hacs=$latest_version_hacs" >> $GITHUB_ENV
+
     - name: Read JSON file and set environment variables
       if: env.HACS_JSON_EXISTS == 'true'
       env:
@@ -56,8 +58,7 @@ runs:
               echo "hassio_equal=${{ env.homeassistant }} (no update)" >> $GITHUB_ENV
           else
               echo "hassio_equal=${{ env.homeassistant }} → ${{ env.version_hassio }}" >> $GITHUB_ENV
-			
-    
+
     - name: Update hacs.json file
       if: env.HACS_JSON_EXISTS == 'true' && env.MATCH != 'true'
       shell: bash
