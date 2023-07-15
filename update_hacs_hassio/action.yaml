@@ -2,9 +2,13 @@ name: 'hacs.json update'
 description: ''
 inputs:
   token:
-    required: true
+    required: false
     description: 'GitHub auth token'
     default: ${{ github.token }}
+  reviewers:
+    description: 'Comma-separated list of reviewers to add, if any'
+    required: false
+    default: 'Ludy87'
 
 runs:
   using: composite
@@ -76,7 +80,6 @@ runs:
         author: GitHub Action <action@github.com>
         signoff: true
         branch: "update_hacs_hassio"
-        delete-branch: true
         title: '🔨 Update hacs.json file by <github-actions[bot]>'
         body: |
             Update report
@@ -90,5 +93,5 @@ runs:
             wait
             in progress
             bot
-        reviewers: Ludy87
+        reviewers: reviewers: ${{ github.event.inputs.reviewers }}
         draft: false
