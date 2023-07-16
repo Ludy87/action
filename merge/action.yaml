@@ -27,7 +27,7 @@ runs:
         github-token: ${{ inputs.token }}
         script: |
             const prNumber = ${{ inputs.prNumber }};
-
+            console.log(`Processing PR number ${prNumber}`);
             await github.rest.issues.addLabels({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -64,7 +64,7 @@ runs:
         github-token: ${{ inputs.token }}
         script: |
           const prNumber = ${{ inputs.prNumber }};
-
+          console.log(`Processing PR number ${prNumber}`);
           await github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
