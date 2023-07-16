@@ -6,7 +6,6 @@ inputs:
     description: 'GitHub auth token'
     default: ${{ github.token }}
 
-if: ${{ github.event_name == 'pull_request' }}
 runs:
   using: composite
   steps:
