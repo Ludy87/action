@@ -1,5 +1,5 @@
 name: 'hacs.json update'
-description: ''
+description: 'This workflow updates the hacs.json file in a GitHub repository. It checks for the existence of the file, retrieves the latest versions of Home Assistant and HACS, reads the JSON file if it exists, checks the status of the versions, updates the hacs.json file if necessary, and creates a pull request with the changes.'
 inputs:
   token:
     required: false
@@ -10,7 +10,7 @@ inputs:
     required: false
     default: 'Ludy87'
   branch:
-    description: ''
+    description: 'The branch to use for the pull request'
     required: false
     default: "update_hacs_hassio"
 
