@@ -6,7 +6,7 @@ import os
 import sys
 from pathlib import Path
 
-HACS_FILE = Path(f"{os.getcwd()}/hacs.json")
+HACS_FILE = Path(f"{os.getcwd()}/hacsw.json")
 
 
 def update_hacs():
@@ -18,10 +18,6 @@ def update_hacs():
             hacs = sys.argv[index + 1]
         if value in ["--hversion", "-hV"]:
             hassversion = sys.argv[index + 1]
-
-    if not os.path.exists(HACS_FILE):
-        with open(HACS_FILE, 'w') as file:
-           file.write('')
 
     with open(HACS_FILE, encoding="utf-8") as hacsfile:
         base: dict = json.load(hacsfile)
