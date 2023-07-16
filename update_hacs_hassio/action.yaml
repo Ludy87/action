@@ -98,8 +98,9 @@ runs:
             wait
             in progress
             bot
-        reviewers: ${{ github.event.inputs.reviewers }}
+        reviewers: ${{ inputs.reviewers }}
         draft: false
+        delete-branch: true
 branding:
   color: gray-dark
   icon: map
