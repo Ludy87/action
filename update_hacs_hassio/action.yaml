@@ -93,7 +93,7 @@ runs:
         author: GitHub Action <action@github.com>
         signoff: true
         branch: ${{ inputs.branch }}
-        base: ${{ inputs.base }}
+        # base: ${{ inputs.base }}
         title: '🔨 Update hacs.json file by <github-actions[bot]>'
         body: |
             Update report
@@ -109,4 +109,5 @@ runs:
             bot
         reviewers: ${{ github.event.inputs.reviewers }}
         draft: false
-        branch-suffix: ${{ inputs.branch-suffix }}
+        # branch-suffix: ${{ inputs.branch-suffix }}
+        client-payload: '{"ref": "${{ github.ref }}", "repository": "${{github.repository}}"}'
