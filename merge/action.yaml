@@ -22,7 +22,7 @@ runs:
             owner: context.repo.owner,
             repo: context.repo.repo,
             issue_number: prNumber,
-            labels: ['PR: released']
+            labels: ['PR: released', 'PR: reopened']
           });
 
           const pullRequestLabels = await github.rest.issues.listLabelsOnIssue({
@@ -56,7 +56,7 @@ runs:
             owner: context.repo.owner,
             repo: context.repo.repo,
             issue_number: prNumber,
-            labels: ['PR: rejected']
+            labels: ['PR: rejected', 'PR: reopened']
           });
 
           const pullRequestLabels = await github.rest.issues.listLabelsOnIssue({
