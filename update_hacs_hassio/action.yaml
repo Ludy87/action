@@ -9,23 +9,14 @@ inputs:
     description: 'Comma-separated list of reviewers to add, if any'
     required: false
     default: 'Ludy87'
-  base:
-    description: ''
-    required: false
-    default: main
   branch:
     description: ''
     required: false
     default: "update_hacs_hassio"
-  branch-suffix:
-    description: ''
-    required: false
-    default: timestamp
 
 runs:
   using: composite
   steps:
-    # - uses: actions/checkout@v3.5.3
     - name: Check if hacs.json file exists
       id: hacs_json_exists
       shell: bash
@@ -87,7 +78,7 @@ runs:
       if: env.HACS_JSON_EXISTS == 'true' && steps.check_status.outputs.match != 'true'
       uses: peter-evans/create-pull-request@v5.0.2
       with:
-        # token: ${{ inputs.token }}
+        token: ${{ inputs.token }}
         commit-message: Update hacs.json file
         committer: GitHub Action <action@github.com>
         author: GitHub Action <action@github.com>
@@ -108,8 +99,7 @@ runs:
             in progress
             bot
         reviewers: ${{ github.event.inputs.reviewers }}
-        # draft: false
-        # branch-suffix: ${{ inputs.branch-suffix }}
+        draft: false
 branding:
   color: gray-dark
   icon: map
