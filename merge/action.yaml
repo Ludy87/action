@@ -20,6 +20,10 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Event
+      run: 
+        echo "${{ github.event.pull_request }}"
+        echo "${{ github.event }}"
     - name: Set Label on Merge
       if: ${{ github.event.pull_request.merged }}
       uses: actions/github-script@v6.4.1
