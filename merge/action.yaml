@@ -21,6 +21,7 @@ runs:
   using: composite
   steps:
     - name: Event
+      shell: bash
       run: 
         echo "${{ github.event.pull_request }}"
         echo "${{ github.event }}"
