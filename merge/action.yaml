@@ -13,6 +13,9 @@ inputs:
     description: 'The branch to use for the pull request'
     required: false
     default: "update_hacs_hassio"
+  prNumber:
+    description: ''
+    required: true
 
 runs:
   using: composite
@@ -23,7 +26,7 @@ runs:
       with:
         github-token: ${{ inputs.token }}
         script: |
-            const prNumber = context.payload.pull_request.number;
+            const prNumber = ${{ inputs.prNumber }};
 
             await github.rest.issues.addLabels({
                 owner: context.repo.owner,
@@ -60,7 +63,7 @@ runs:
       with:
         github-token: ${{ inputs.token }}
         script: |
-          const prNumber = context.payload.pull_request.number;
+          const prNumber = ${{ inputs.prNumber }};
 
           await github.rest.issues.addLabels({
               owner: context.repo.owner,
