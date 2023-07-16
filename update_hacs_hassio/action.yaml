@@ -13,6 +13,10 @@ inputs:
     description: ''
     required: false
     default: main
+  branch:
+    description: ''
+    required: false
+    default: "update_hacs_hassio"
 
 runs:
   using: composite
@@ -84,7 +88,7 @@ runs:
         committer: GitHub Action <action@github.com>
         author: GitHub Action <action@github.com>
         signoff: true
-        branch: "update_hacs_hassio"
+        branch: branch
         base: base
         title: '🔨 Update hacs.json file by <github-actions[bot]>'
         body: |
