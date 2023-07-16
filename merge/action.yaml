@@ -23,7 +23,7 @@ runs:
       with:
         github-token: ${{ inputs.token }}
         script: |
-            const prNumber = `${{github.event.pull_request.number}}`;
+            const prNumber = `${{ github.event.number }}`;
             console.log(`Processing PR number ${prNumber}`);
             await github.rest.issues.addLabels({
                 owner: context.repo.owner,
@@ -60,7 +60,7 @@ runs:
       with:
         github-token: ${{ inputs.token }}
         script: |
-          const prNumber = `${{github.event.pull_request.number}}`;
+          const prNumber = `${{ github.event.number }}`;
           console.log(`Processing PR number ${prNumber}`);
           await github.rest.issues.addLabels({
               owner: context.repo.owner,
