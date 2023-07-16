@@ -109,5 +109,4 @@ runs:
             bot
         reviewers: ${{ github.event.inputs.reviewers }}
         draft: false
-        # branch-suffix: ${{ inputs.branch-suffix }}
-        client-payload: '{"ref": "${{ github.ref }}", "repository": "${{github.repository}}"}'
+        branch-suffix: ${{ inputs.branch-suffix }}
