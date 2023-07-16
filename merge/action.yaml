@@ -16,7 +16,6 @@ inputs:
   prNumber:
     description: 'The number of the pull request'
     required: true
-    default: 1
 
 runs:
   using: composite
@@ -31,7 +30,7 @@ runs:
       with:
         github-token: ${{ inputs.token }}
         script: |
-            const prNumber = `${{ github.event.number }}`;
+            const prNumber = context.payload.pull_request.number;
             console.log(`Processing PR number ${prNumber}`);
             await github.rest.issues.addLabels({
                 owner: context.repo.owner,
@@ -68,7 +67,7 @@ runs:
       with:
         github-token: ${{ inputs.token }}
         script: |
-          const prNumber = `${{ github.event.number }}`;
+          const prNumber = context.payload.pull_request.number;
           console.log(`Processing PR number ${prNumber}`);
           await github.rest.issues.addLabels({
               owner: context.repo.owner,
