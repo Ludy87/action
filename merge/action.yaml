@@ -21,7 +21,7 @@ runs:
       if: ${{ github.event.pull_request.merged }}
       uses: actions/github-script@v6.4.1
       with:
-        github-token: ${{ input.token }}
+        github-token: ${{ inputs.token }}
         script: |
             const prNumber = context.payload.pull_request.number;
 
@@ -58,7 +58,7 @@ runs:
       if: ${{ !github.event.pull_request.merged }}
       uses: actions/github-script@v6.4.1
       with:
-        github-token: ${{ input.token }}
+        github-token: ${{ inputs.token }}
         script: |
           const prNumber = context.payload.pull_request.number;
 
