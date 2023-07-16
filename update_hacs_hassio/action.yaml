@@ -78,13 +78,13 @@ runs:
           fi
 
     - name: Update hacs.json file
-      if: env.HACS_JSON_EXISTS == 'true' && env.MATCH != 'true'
+      if: env.HACS_JSON_EXISTS == 'true' && steps.check_status.outputs.match != 'true'
       shell: bash
       run: |
         python3 ${{ github.action_path }}/scripts/update/hacs.py --hversion ${{ env.version_hassio }} --version ${{ env.version_hacs }}
     
     - name: Create Pull Request
-      if: env.HACS_JSON_EXISTS == 'true' && env.MATCH != 'true'
+      if: env.HACS_JSON_EXISTS == 'true' && steps.check_status.outputs.match != 'true'
       uses: peter-evans/create-pull-request@v5.0.2
       with:
         # token: ${{ inputs.token }}
