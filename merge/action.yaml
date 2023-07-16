@@ -27,6 +27,7 @@ runs:
         echo "${{ github.event.pull_request.number }}"
         echo "${{ github.event.action }}"
         echo "${{ github.event.pull_request.merged }}"
+        echo "${{ inputs.prNumber }}"
     - name: Set Label on Merge
       if: ${{ github.event.pull_request.merged }}
       uses: actions/github-script@v6.4.1
