@@ -22,7 +22,7 @@ runs:
             owner: context.repo.owner,
             repo: context.repo.repo,
             issue_number: prNumber,
-            labels: ['PR: released', 'PR: reopened']
+            labels: ['PR: released']
           });
 
           const pullRequestLabels = await github.rest.issues.listLabelsOnIssue({
@@ -32,7 +32,7 @@ runs:
           });
 
           const labelNames = pullRequestLabels.data.map(label => label.name);
-          const labelsToRemove = ['in progress', 'wait'];
+          const labelsToRemove = ['in progress', 'wait', 'PR: reopened'];
           const labelsToRemoveFiltered = labelsToRemove.filter(label => labelNames.includes(label));
 
           for (const labelToRemove of labelsToRemoveFiltered) {
@@ -56,7 +56,7 @@ runs:
             owner: context.repo.owner,
             repo: context.repo.repo,
             issue_number: prNumber,
-            labels: ['PR: rejected', 'PR: reopened']
+            labels: ['PR: rejected']
           });
 
           const pullRequestLabels = await github.rest.issues.listLabelsOnIssue({
@@ -66,7 +66,7 @@ runs:
           });
 
           const labelNames = pullRequestLabels.data.map(label => label.name);
-          const labelsToRemove = ['in progress', 'wait'];
+          const labelsToRemove = ['in progress', 'wait', 'PR: reopened'];
           const labelsToRemoveFiltered = labelsToRemove.filter(label => labelNames.includes(label));
 
           for (const labelToRemove of labelsToRemoveFiltered) {
