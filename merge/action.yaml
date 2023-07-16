@@ -13,10 +13,18 @@ inputs:
     description: 'The branch to use for the pull request'
     required: false
     default: "update_hacs_hassio"
+  prNumber:
+    description: 'The number of the pull request'
+    required: true
+    default: 1
 
 runs:
   using: composite
   steps:
+    - name: PR-Number
+      shell: bash
+      run: |
+        echo "${{ inputs.prNumber }}"
     - name: Set Label on Merge
       if: ${{ github.event.pull_request.merged }}
       uses: actions/github-script@v6.4.1
