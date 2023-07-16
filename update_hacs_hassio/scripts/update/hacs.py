@@ -19,8 +19,9 @@ def update_hacs():
         if value in ["--hversion", "-hV"]:
             hassversion = sys.argv[index + 1]
 
-    if os.path.exists(HACS_FILE):
-        return
+    if not os.path.exists(HACS_FILE):
+        with open(HACS_FILE, 'w') as file:
+           file.write('')
 
     with open(HACS_FILE, encoding="utf-8") as hacsfile:
         base: dict = json.load(hacsfile)
