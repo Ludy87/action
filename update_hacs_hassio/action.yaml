@@ -88,8 +88,8 @@ runs:
         committer: GitHub Action <action@github.com>
         author: GitHub Action <action@github.com>
         signoff: true
-        branch: branch
-        base: base
+        branch: ${{ inputs.branch }}
+        base: ${{ inputs.base }}
         title: '🔨 Update hacs.json file by <github-actions[bot]>'
         body: |
             Update report
