@@ -17,6 +17,10 @@ inputs:
     description: ''
     required: false
     default: "update_hacs_hassio"
+  branch-suffix:
+    description: ''
+    required: false
+    default: timestamp
 
 runs:
   using: composite
@@ -105,3 +109,4 @@ runs:
             bot
         reviewers: ${{ github.event.inputs.reviewers }}
         draft: false
+        branch-suffix: ${{ inputs.branch-suffix }}
