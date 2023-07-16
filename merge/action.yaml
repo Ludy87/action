@@ -1,0 +1,94 @@
+name: 'Merge or Close PR'
+description: ''
+inputs:
+  token:
+    required: false
+    description: 'GitHub auth token'
+    default: ${{ github.token }}
+  reviewers:
+    description: 'Comma-separated list of reviewers to add, if any'
+    required: false
+    default: 'Ludy87'
+  branch:
+    description: 'The branch to use for the pull request'
+    required: false
+    default: "update_hacs_hassio"
+
+runs:
+  using: composite
+  steps:
+    - name: Set Label on Merge
+      if: ${{ github.event.pull_request.merged }}
+      uses: actions/github-script@v6.4.1
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+            const prNumber = context.payload.pull_request.number;
+
+            await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                labels: ['PR: released']
+            });
+            const pullRequestLabels = await github.rest.issues.listLabelsOnIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber
+            });
+
+            const labelNames = pullRequestLabels.data.map(label => label.name);
+            if (labelNames.includes('in progress')) {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                name: 'in progress'
+              });
+            }
+            if (labelNames.includes('wait')) {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                name: 'wait'
+              });
+            }
+    - name: Set Label on Reject
+      if: ${{ !github.event.pull_request.merged }}
+      uses: actions/github-script@v6.4.1
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const prNumber = context.payload.pull_request.number;
+
+          await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              labels: ['PR: rejected']
+          });
+
+          const pullRequestLabels = await github.rest.issues.listLabelsOnIssue({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: prNumber
+          });
+
+          const labelNames = pullRequestLabels.data.map(label => label.name);
+          if (labelNames.includes('in progress')) {
+            await github.rest.issues.removeLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              name: 'in progress'
+            });
+          }
+          if (labelNames.includes('wait')) {
+            await github.rest.issues.removeLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              name: 'wait'
+            });
+          }
