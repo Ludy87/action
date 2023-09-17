@@ -73,6 +73,12 @@ runs:
       shell: bash
       run: |
         python3 ${{ github.action_path }}/scripts/update/hacs.py --hversion ${{ env.version_hassio }} --version ${{ env.version_hacs }}
+
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v3
+    - uses: pre-commit/action@v3.0.0
+      with:
+        extra_args: check-json
     
     - name: Create Pull Request
       if: env.HACS_JSON_EXISTS == 'true' && steps.check_status.outputs.match != 'true'
