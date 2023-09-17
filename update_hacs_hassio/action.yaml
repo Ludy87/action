@@ -78,7 +78,7 @@ runs:
     - uses: actions/setup-python@v3
     - uses: pre-commit/action@v3.0.0
       with:
-        extra_args: check-json
+        extra_args: pretty-format-json --autofix --no-sort-keys
     
     - name: Create Pull Request
       if: env.HACS_JSON_EXISTS == 'true' && steps.check_status.outputs.match != 'true'
