@@ -46,6 +46,7 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.GH_TOKEN }}
       with:
+        commit_options: '--no-verify --signoff'
         file_pattern: ${{ inputs.README }}
         commit_message: ${{ inputs.COMMIT_MESSAGE }}
         branch: ${{ inputs.BRANCH }}
