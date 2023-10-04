@@ -44,7 +44,7 @@ runs:
         FILENAME: ${{ inputs.README }}
     - uses: stefanzweifel/git-auto-commit-action@v4.16.0
       env:
-        GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        GITHUB_TOKEN: ${{ inputs.GH_TOKEN }}
       with:
         file_pattern: ${{ inputs.README }}
         commit_message: ${{ inputs.COMMIT_MESSAGE }}
