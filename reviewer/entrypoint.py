@@ -100,7 +100,6 @@ def get_review(
         temperature: float,
         max_tokens: int,
         top_p: float,
-        top_k: float,
         frequency_penalty: float,
         presence_penalty: float,
         prompt_chunk_size: int
@@ -111,10 +110,8 @@ def get_review(
     generation_config = {
         "temperature": temperature,
         "top_p": top_p,
-        "top_k": top_k,
+        "top_k": 0,
         "max_output_tokens": max_tokens,
-        # "frequency_penalty": frequency_penalty,
-        # "presence_penalty": presence_penalty
     }
     genai_model = genai.GenerativeModel(model_name=model, generation_config=generation_config, system_instruction=extra_prompt)
 
@@ -163,7 +160,6 @@ def format_review_comment(summarized_review: str, chunked_reviews: List[str]) ->
 @click.option("--temperature", type=click.FLOAT, required=False, default=0.1, help="Temperature setting for the model")
 @click.option("--max-tokens", type=click.INT, required=False, default=512, help="Max tokens for the model output")
 @click.option("--top-p", type=click.FLOAT, required=False, default=1.0, help="Top-p setting for the model")
-@click.option("--top-k", type=click.FLOAT, required=False, default=0, help="Top-k setting for the model")
 @click.option("--frequency-penalty", type=click.FLOAT, required=False, default=0.0, help="Frequency penalty for the model")
 @click.option("--presence-penalty", type=click.FLOAT, required=False, default=0.0, help="Presence penalty for the model")
 @click.option("--log-level", type=click.STRING, required=False, default="INFO", help="Log level")
@@ -175,7 +171,6 @@ def main(
         temperature: float,
         max_tokens: int,
         top_p: float,
-        top_k: float,
         frequency_penalty: float,
         presence_penalty: float,
         log_level: str
@@ -199,7 +194,6 @@ def main(
         temperature=temperature,
         max_tokens=max_tokens,
         top_p=top_p,
-        top_k=top_k,
         frequency_penalty=frequency_penalty,
         presence_penalty=presence_penalty,
         prompt_chunk_size=diff_chunk_size
