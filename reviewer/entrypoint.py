@@ -177,7 +177,8 @@ def main(
         log_level: str
 ):
     # Set log level
-    logger.setLevel(log_level.upper())
+    logger.remove()
+    logger.add(lambda msg: print(msg, end=''), level=log_level.upper())
 
     # Check if necessary environment variables are set or not
     check_required_env_vars()
