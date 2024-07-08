@@ -36,12 +36,16 @@ def check_required_env_vars():
 def get_review_prompt(extra_prompt: str = "") -> str:
     """Get a prompt template"""
     template = f"""
-    This is a pull request or part of a pull request if the pull request is very large.
-    Suppose you review this PR as an excellent software engineer and an excellent security engineer.
-    Can you tell me the issues with differences in a pull request and provide suggestions to improve it?
-    You can provide a review summary and issue comments per file if any major issues are found.
-    Always include the name of the file that is citing the improvement or problem.
-    In the next messages I will be sending you the difference between the GitHub file codes, okay?
+    This is a pull request, or part of a pull request if it is very large.
+    Your task is to review this PR as both an excellent software engineer and an excellent security engineer.
+    Identify and describe any issues or potential improvements in the changes provided.
+    Your review should include:
+    1. A summary of the overall changes.
+    2. Specific comments on individual files, highlighting major issues, potential bugs, security vulnerabilities, and code quality concerns.
+    3. Practical suggestions for improvements or fixes where applicable.
+    Ensure that each comment references the specific file and line number where the issue is found.
+    In the following messages, I will provide you with the code differences from the GitHub files.
+    {extra_prompt}
     """
     return template
 
@@ -49,9 +53,9 @@ def get_review_prompt(extra_prompt: str = "") -> str:
 def get_summarize_prompt() -> str:
     """Get a prompt template"""
     template = """
-    Can you summarize this for me?
-    It would be good to stick to highlighting pressing issues and providing code suggestions to improve the pull request.
-    Here's what you need to summarize:
+    Please provide a summary of the following review comments.
+    Focus on highlighting the most critical issues and include actionable code suggestions to improve the pull request.
+    Here is the content you need to summarize:
     """
     return template
 
