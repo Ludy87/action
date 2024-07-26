@@ -99,7 +99,7 @@ runs:
     - "--model=${{ inputs.model }}"
     - "--extra-prompt=${{ inputs.extra_prompt }}"
     - "--temperature=${{ inputs.temperature }}"
-    # - "--max-tokens=${{ inputs.max_tokens }}"
+    - "--max-tokens=${{ inputs.max_tokens }}"
     - "--top-p=${{ inputs.top_p }}"
     - "--frequency-penalty=${{ inputs.frequency_penalty }}"
     - "--presence-penalty=${{ inputs.presence_penalty }}"
