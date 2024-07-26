@@ -120,8 +120,8 @@ def get_review(
     }
     genai_model = genai.GenerativeModel(model_name=model, generation_config=generation_config, system_instruction=extra_prompt)
 
-    model_info = genai.get_model(model)
-    print(f'{model} - input limit: {model_info.input_token_limit}, output limit: {model_info.output_token_limit}')
+    model_info = genai.get_model("models/" + model)
+    print(f'{"models/" + model} - input limit: {model_info.input_token_limit}, output limit: {model_info.output_token_limit}')
 
     # Prompt tokens count
     response = genai_model.count_tokens(review_prompt)
