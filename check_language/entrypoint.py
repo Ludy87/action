@@ -120,6 +120,10 @@ def get_review(
     }
     genai_model = genai.GenerativeModel(model_name=model, generation_config=generation_config, system_instruction=extra_prompt)
 
+    for m in genai.list_models():
+        if "generateContent" in m.supported_generation_methods:
+            print(m.name)
+
     # Prompt tokens count
     response = genai_model.count_tokens(review_prompt)
     print(f"Prompt Token Count: {response.total_tokens}")
