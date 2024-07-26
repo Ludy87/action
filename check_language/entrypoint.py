@@ -44,8 +44,9 @@ def get_review_prompt(extra_prompt: str = "") -> str:
     2. Lines that begin with a hash (#) are fully compared.
     3. Empty lines are also present in the corresponding positions in both files.
     Your review should include:
-    1. Specific comments on individual files, indicating mismatched keys, missing values, and any discrepancies in hash-prefixed or empty lines.
-    2. Practical suggestions for improvements or fixes where applicable.
+    1. A summary of the overall changes.
+    2. Specific comments on individual files, indicating mismatched keys, missing values, and any discrepancies in hash-prefixed or empty lines.
+    3. Practical suggestions for improvements or fixes where applicable.
     Ensure that each comment references the specific file and line number where the issue is found.
     In the following messages, I will provide you with the code differences from the GitHub files.
     {extra_prompt}
