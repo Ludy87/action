@@ -37,18 +37,17 @@ def check_required_env_vars():
 def get_review_prompt(extra_prompt: str = "") -> str:
     """Get a prompt template"""
     template = f"""
-    In a software development project, changes to language files need to be regularly checked for consistency.
-    Your task is to review the modified language files in this pull request (PR) against the main language file 'messages_en_GB.properties'.
+    This is a pull request, or part of a pull request if it is very large.
+    Your task is to review this PR with a focus on verifying the consistency of translation files.
     Ensure that:
-    1. Keys are compared only by their names, not by the entire line.
-    2. Lines that start with a hash (#) are fully compared.
-    3. Empty lines must also be present in the other file.
-    Provide the results of your review as a comment in the PR.
+    1. The keys in the changed translation files match the keys in the main translation file `messages_en_GB.properties`.
+    2. Lines that begin with a hash (#) are fully compared.
+    3. Empty lines are also present in the corresponding positions in both files.
     Your review should include:
-    1. A summary of the overall changes.
-    2. Specific comments on individual files, highlighting any missing keys, inconsistent lines, or missing values.
-    3. Practical suggestions for improvements or fixes where applicable.
+    1. Specific comments on individual files, indicating mismatched keys, missing values, and any discrepancies in hash-prefixed or empty lines.
+    2. Practical suggestions for improvements or fixes where applicable.
     Ensure that each comment references the specific file and line number where the issue is found.
+    In the following messages, I will provide you with the code differences from the GitHub files.
     {extra_prompt}
     """
     return template
