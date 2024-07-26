@@ -79,7 +79,7 @@ def create_a_comment_to_pull_request(
     }
     url = f"https://api.github.com/repos/{github_repository}/pulls/{pull_request_number}/reviews"
     response = requests.post(url, headers=headers, data=json.dumps(data), timeout=60)
-    
+
     try:
         response.raise_for_status()
     except requests.exceptions.HTTPError as err:
@@ -125,7 +125,7 @@ def get_review(
         review_result = convo.last.text
         logger.debug(f"Response AI: {review_result}")
         chunked_reviews.append(review_result)
-    
+
     if len(chunked_reviews) == 1:
         return chunked_reviews, chunked_reviews[0]
 
@@ -203,7 +203,7 @@ def main(
 
     # Format reviews
     review_comment = format_review_comment(summarized_review=summarized_review, chunked_reviews=chunked_reviews)
-    
+
     # Create a comment to a pull request
     create_a_comment_to_pull_request(
         github_token=os.getenv("GITHUB_TOKEN"),
