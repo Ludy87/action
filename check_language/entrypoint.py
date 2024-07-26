@@ -123,7 +123,6 @@ def get_review(
     # Prompt tokens count
     response = genai_model.count_tokens(review_prompt)
     print(f"Prompt Token Count: {response.total_tokens}")
-    print(f"Prompt Character Count: {response.total_billable_characters}")
 
     chunked_reviews = []
     for chunked_diff in chunked_diff_list:
