@@ -49,6 +49,8 @@ def get_review_prompt(extra_prompt: str = "") -> str:
     3. Practical suggestions for improvements or fixes where applicable.
     Ensure that each comment references the specific file and line number where the issue is found.
     In the following messages, I will provide you with the code differences from the GitHub files.
+
+    `messages_en_GB.properties`:
     {extra_prompt}
     """
     return template
