@@ -99,7 +99,7 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels) {
                     owner: issue.owner,
                     repo: issue.repo,
                     issue_number: issue.number,
-                    body: `Hi @${author} Der Title ist Mist!`,
+                    body: `Hi @${author}, der Titel ist unzureichend!`,
                 });
                 return;
             }
