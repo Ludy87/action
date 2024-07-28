@@ -17,8 +17,8 @@ async function run() {
     // action Inputs
     const token = core.getInput('token', { required: true });
     const client = github.getOctokit(token);
-    const issuesTitlePattern = core.getInput('issues_pattern');
-    const issuesPatternFlags = core.getInput('issues_pattern_flags');
+    const issuesTitlePattern = core.getInput('issues_pattern') || DEFAULT_PATTERN;
+    const issuesPatternFlags = core.getInput('issues_pattern_flags') || DEFAULT_FLAGS;
     const issuesMinLen = parseInt(core.getInput('issues_min_length'));
     const issuesMaxLen = parseInt(core.getInput('issues_max_length'));
     const issuesLabels = core
@@ -29,7 +29,7 @@ async function run() {
 
     core.info(`minLen: ${issuesMinLen}`);
     core.info(`maxLen: ${issuesMaxLen}`);
-    core.info(`maxLen: ${issuesLabels}`);
+    core.info(`labels: ${issuesLabels}`);
 
     const { eventName } = github.context;
     core.info(`Event name: ${eventName}`);
@@ -117,11 +117,9 @@ async function issues(
 
             // Find and delete the specific comment
             for (const comment of comments.data) {
-                const bo = comment.user?.name;
-                const boid = comment.user?.id;
+                const comment_user_name = comment.user?.name;
+                const comment_user_id = comment.user?.id;
 
-                core.info(bo ? bo : 'war nichts');
-                core.error(`${boid} Hi @${author}! ${issuesComment}`); // Hier ist ein Problem
                 if (
                     comment.body === `Hi @${author}! ${issuesComment}` &&
                     comment.user?.id === 41898282
@@ -132,9 +130,14 @@ async function issues(
                         comment_id: comment.id,
                     });
                     core.info(`Removed comment: ${comment.id}`);
+                } else if (comment.user?.id !== 41898282) {
+                    core.error(
+                        `${comment_user_name} (${comment_user_id}) is not allowed!`,
+                    );
+                } else {
+                    core.info("Don't find comment");
                 }
             }
-            core.info('Title OK.');
         }
     } catch (error) {
         if (error instanceof Error) {
