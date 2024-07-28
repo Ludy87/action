@@ -78,6 +78,12 @@ async function issues(
             });
             return;
         } else {
+            await client.rest.issues.removeLabel({
+                owner: issue.owner,
+                repo: issue.repo,
+                issue_number: issue.number,
+                name: issuesLabels.join(','),
+            });
             core.info('Title OK.');
         }
     } catch (error) {
