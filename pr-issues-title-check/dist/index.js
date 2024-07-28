@@ -84,6 +84,12 @@ function issues() {
                     issue_number: issue.number,
                     labels: ['invalid'],
                 });
+                yield client.rest.issues.createComment({
+                    owner: issue.owner,
+                    repo: issue.repo,
+                    issue_number: issue.number,
+                    body: "Der Title ist Mist!",
+                });
                 return;
             }
         }
