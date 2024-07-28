@@ -42,7 +42,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const DEFAULT_FLAGS = 'gmi';
-const DEFAULT_PATTERN = '^(\\[Feature Request\\]: |\\[Bug\\]: )(?:(\\b\\w{2,}\\b\\s+){2,}\\b\\w{2,}\\b)|^(?:(\\b\\w{2,}\\b\\s+){2,}\\b\\w{2,}\\b)';
+const DEFAULT_PATTERN = '^(\\[Feature Request\\]: |\\[Bug\\]: )(?:(\\b\\w{2,}\\b\\s+){2,}\\b\\w{2,}\\b)$';
 // const GITHUB_PULL_REQUEST_EVENT = 'pull_request';
 // const GITHUB_PULL_REQUEST_TARGET_EVENT = 'pull_request_target';
 const GITHUB_ISSUES = 'issues';
@@ -51,30 +51,35 @@ const GITHUB_ISSUES = 'issues';
 // const GITHUB_ISSUES_EDITED = 'edited';
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
+        // action Inputs
+        const token = core.getInput('token', { required: true });
+        const client = github.getOctokit(token);
+        const issuesTitlePattern = core.getInput('issues_pattern');
+        const issuesPatternFlags = core.getInput('issues_pattern_flags');
+        const minLen = parseInt(core.getInput('issues_min_length'));
+        const maxLen = parseInt(core.getInput('issues_max_length'));
+        core.info(`minLen: ${minLen}`);
+        core.info(`maxLen: ${maxLen}`);
+        const { eventName } = github.context;
+        core.info(`Event name: ${eventName}`);
+        if (eventName !== GITHUB_ISSUES) {
+            core.setFailed(`Invalid event: ${eventName}`);
+            return;
+        }
         pull_request();
-        yield issues();
+        yield issues(client, issuesTitlePattern, issuesPatternFlags);
     });
 }
-function issues() {
+function issues(client, issuesTitlePattern, issuesPatternFlags) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             // Get client and context
-            const token = core.getInput('github_token', { required: true });
-            const client = github.getOctokit(token);
             const issue = github.context.issue;
-            const { eventName } = github.context;
-            core.info(`Event name: ${eventName}`);
-            if (eventName !== GITHUB_ISSUES) {
-                core.setFailed(`Invalid event: ${eventName}`);
-                return;
-            }
             const issuesTitle = (_a = github.context.payload.issue) === null || _a === void 0 ? void 0 : _a.title;
             core.info(`Issues title: ${issuesTitle}`);
-            const inputPattern = core.getInput('pattern');
-            const inputFlags = core.getInput('flags');
-            const regexFlags = inputFlags === '' ? DEFAULT_FLAGS : inputFlags;
-            const regexPattern = inputPattern === '' ? DEFAULT_PATTERN : inputPattern;
+            const regexFlags = issuesPatternFlags === '' ? DEFAULT_FLAGS : issuesPatternFlags;
+            const regexPattern = issuesTitlePattern === '' ? DEFAULT_PATTERN : issuesTitlePattern;
             const regex = new RegExp(regexPattern, regexFlags);
             const regexExistsInTitle = regex.test(issuesTitle);
             const author = github.context.actor;
