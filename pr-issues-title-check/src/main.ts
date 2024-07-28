@@ -108,6 +108,9 @@ async function issues(
 
             // Find and delete the specific comment
             for (const comment of comments.data) {
+                const bo = comment.body;
+
+                core.info(bo ? bo : 'war nichts');
                 if (
                     comment.body ===
                     `Hi @${author}, der Titel ist unzureichend!`
