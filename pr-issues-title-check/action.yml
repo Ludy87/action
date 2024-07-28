@@ -2,18 +2,31 @@ name: 'PR & Issues Title Verify'
 description: 'Check PR and Issues title against a regex'
 author: 'Ludy87'
 inputs:
-  pattern:
+  issues_pattern:
     required: false
     description: 'regex pattern to match against'
-  flags:
+  issues_pattern_flags:
     required: false
     description: 'flags for the regex input'
-  github_token:
+  issues_min_length:
+    description: 'Min length of title'
+    required: false
+    default: '1'
+  issues_max_length:
+    description: 'Max length of title. -1 to ignore the rule'
+    required: false
+    default: '-1'
+  token:
     required: true
-    description: 'github_token'
+    description:
+      Personal access token (PAT) used to fetch the repository. The PAT is configured
+      with the local git config, which enables your scripts to run authenticated git
+      commands. The post-job step removes the PAT.
+      We recommend using a service account with the least permissions necessary.
+      Also when generating a new PAT, select the least scopes necessary.
 runs:
   using: 'node20'
   main: 'dist/index.js'
 branding:
   icon: 'check'
-  color: 'blue'
+  color: 'green'
