@@ -111,6 +111,7 @@ async function issues(
                 const bo = comment.body;
 
                 core.info(bo ? bo : 'war nichts');
+                core.info(`Hi @${author}, der Titel ist unzureichend!`);
                 if (
                     comment.body ===
                     `Hi @${author}, der Titel ist unzureichend!`
