@@ -123,6 +123,24 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels) {
                         core.info(`Removed label: ${label}`);
                     }
                 }
+                // Fetch all comments on the issue
+                const comments = yield client.rest.issues.listComments({
+                    owner: issue.owner,
+                    repo: issue.repo,
+                    issue_number: issue.number,
+                });
+                // Find and delete the specific comment
+                for (const comment of comments.data) {
+                    if (comment.body ===
+                        `Hi @${author}, der Titel ist unzureichend!`) {
+                        yield client.rest.issues.deleteComment({
+                            owner: issue.owner,
+                            repo: issue.repo,
+                            comment_id: comment.id,
+                        });
+                        core.info(`Removed comment: ${comment.id}`);
+                    }
+                }
                 core.info('Title OK.');
             }
         }
