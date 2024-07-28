@@ -83,7 +83,7 @@ async function issues(
                 owner: issue.owner,
                 repo: issue.repo,
                 issue_number: issue.number,
-                body: `${issuesComment}`,
+                body: `Hi ${author}! ${issuesComment}`,
             });
             return;
         } else {
@@ -120,8 +120,8 @@ async function issues(
                 const bo = comment.body;
 
                 core.info(bo ? bo : 'war nichts');
-                core.info(`${issuesComment}`);
-                if (comment.body === `${issuesComment}`) {
+                core.error(`Hi ${author}! ${issuesComment}`);  // Hier ist ein Problem
+                if (comment.body === `Hi ${author}! ${issuesComment}`) {
                     await client.rest.issues.deleteComment({
                         owner: issue.owner,
                         repo: issue.repo,
