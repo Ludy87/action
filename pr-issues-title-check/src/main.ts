@@ -3,8 +3,7 @@ import * as github from '@actions/github';
 import { GitHub } from '@actions/github/lib/utils';
 
 const DEFAULT_FLAGS = 'gmi';
-const DEFAULT_PATTERN =
-    '^(\\[Feature Request\\]: |\\[Bug\\]: )(?:(\\b\\w{2,}\\b\\s+){2,}\\b\\w{2,}\\b)$';
+const DEFAULT_PATTERN = '^.*$';
 
 // const GITHUB_PULL_REQUEST_EVENT = 'pull_request';
 // const GITHUB_PULL_REQUEST_TARGET_EVENT = 'pull_request_target';
@@ -20,11 +19,13 @@ async function run() {
     const client = github.getOctokit(token);
     const issuesTitlePattern = core.getInput('issues_pattern');
     const issuesPatternFlags = core.getInput('issues_pattern_flags');
-    const minLen = parseInt(core.getInput('issues_min_length'));
-    const maxLen = parseInt(core.getInput('issues_max_length'));
+    const issuesMinLen = parseInt(core.getInput('issues_min_length'));
+    const issuesMaxLen = parseInt(core.getInput('issues_max_length'));
+    const issuesLabels = parseInt(core.getInput('issues_labels'));
 
-    core.info(`minLen: ${minLen}`);
-    core.info(`maxLen: ${maxLen}`);
+    core.info(`minLen: ${issuesMinLen}`);
+    core.info(`maxLen: ${issuesMaxLen}`);
+    core.info(`maxLen: ${issuesLabels}`);
 
     const { eventName } = github.context;
     core.info(`Event name: ${eventName}`);
@@ -72,6 +73,8 @@ async function issues(
                 body: `Hi @${author} Der Title ist Mist!`,
             });
             return;
+        } else {
+            core.info('Title OK.');
         }
     } catch (error) {
         if (error instanceof Error) {
