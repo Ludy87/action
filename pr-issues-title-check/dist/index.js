@@ -104,12 +104,19 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels) {
                 return;
             }
             else {
-                yield client.rest.issues.removeLabel({
+                const labels = yield client.rest.issues.listLabelsOnIssue({
                     owner: issue.owner,
                     repo: issue.repo,
                     issue_number: issue.number,
-                    name: issuesLabels.join(",")
                 });
+                const labelNames = labels.data.map((label) => label.name.trim());
+                core.info(`Labels on issue: ${labelNames.join(', ')}`);
+                // await client.rest.issues.removeLabel({
+                //     owner: issue.owner,
+                //     repo: issue.repo,
+                //     issue_number: issue.number,
+                //     name: issuesLabels.join(','),
+                // });
                 core.info('Title OK.');
             }
         }
