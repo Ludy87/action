@@ -28,7 +28,7 @@ inputs:
       Also when generating a new PAT, select the least scopes necessary.
 runs:
   using: 'node20'
-  main: 'src/main.ts'
+  main: 'dist/index.js'
 branding:
   icon: 'check'
   color: 'green'
