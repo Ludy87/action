@@ -80,7 +80,7 @@ async function issues(
         } else {
             const labels = await client.rest.issues.listLabelsOnIssue({
                 owner: issue.owner,
-                repo: issue.repo;
+                repo: issue.repo,
                 issue_number: issue.number,
             });
             const labelNames = labels.data.map((label) => label.name.trim());
