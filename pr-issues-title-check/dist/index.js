@@ -58,7 +58,7 @@ function run() {
         const issuesPatternFlags = core.getInput('issues_pattern_flags');
         const issuesMinLen = parseInt(core.getInput('issues_min_length'));
         const issuesMaxLen = parseInt(core.getInput('issues_max_length'));
-        const issuesLabels = parseInt(core.getInput('issues_labels'));
+        const issuesLabels = core.getInput('issues_labels').split(',').map(label => label.trim());
         core.info(`minLen: ${issuesMinLen}`);
         core.info(`maxLen: ${issuesMaxLen}`);
         core.info(`maxLen: ${issuesLabels}`);
@@ -69,10 +69,10 @@ function run() {
             return;
         }
         pull_request();
-        yield issues(client, issuesTitlePattern, issuesPatternFlags);
+        yield issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels);
     });
 }
-function issues(client, issuesTitlePattern, issuesPatternFlags) {
+function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -90,7 +90,7 @@ function issues(client, issuesTitlePattern, issuesPatternFlags) {
                     owner: issue.owner,
                     repo: issue.repo,
                     issue_number: issue.number,
-                    labels: ['invalid'],
+                    labels: issuesLabels,
                 });
                 yield client.rest.issues.createComment({
                     owner: issue.owner,
