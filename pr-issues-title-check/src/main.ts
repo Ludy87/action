@@ -48,7 +48,7 @@ async function issues(): Promise<void> {
                 owner: issue.owner,
                 repo: issue.repo,
                 issue_number: issue.number,
-                lable: ['invalid'],
+                labels: ['invalid'],
             });
             return;
         }
