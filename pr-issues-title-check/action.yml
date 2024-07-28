@@ -18,6 +18,8 @@ inputs:
     default: '-1'
   issues_labels:
     default: Title invalid, bad
+  issues_comment:
+    default: Hi @${author}, der Titel ist unzureichend!
   token:
     required: true
     description:
