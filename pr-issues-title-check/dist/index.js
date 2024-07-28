@@ -29,12 +29,20 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
-// const DEFAULT_FLAGS = 'gmi';
-// const DEFAULT_PATTERN =
-//     '^(\\[Feature Request\\]: |\\[Bug\\]: )(?:(\\b\\w{2,}\\b\\s+){2,}\\b\\w{2,}\\b)|^(?:(\\b\\w{2,}\\b\\s+){2,}\\b\\w{2,}\\b)';
+const DEFAULT_FLAGS = 'gmi';
+const DEFAULT_PATTERN = '^(\\[Feature Request\\]: |\\[Bug\\]: )(?:(\\b\\w{2,}\\b\\s+){2,}\\b\\w{2,}\\b)|^(?:(\\b\\w{2,}\\b\\s+){2,}\\b\\w{2,}\\b)';
 // const GITHUB_PULL_REQUEST_EVENT = 'pull_request';
 // const GITHUB_PULL_REQUEST_TARGET_EVENT = 'pull_request_target';
 const GITHUB_ISSUES = 'issues';
@@ -42,29 +50,52 @@ const GITHUB_ISSUES = 'issues';
 // const GITHUB_ISSUES_REOPENED = 'reopened';
 // const GITHUB_ISSUES_EDITED = 'edited';
 function run() {
-    pull_request();
-    issues();
+    return __awaiter(this, void 0, void 0, function* () {
+        pull_request();
+        yield issues();
+    });
 }
 function issues() {
     var _a;
-    try {
-        const { eventName } = github.context;
-        core.info(`Event name: ${eventName}`);
-        if (eventName !== GITHUB_ISSUES) {
-            core.setFailed(`Invalid event: ${eventName}`);
-            return;
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            // Get client and context
+            const token = core.getInput('github_token', { required: true });
+            const client = github.getOctokit(token);
+            const issue = github.context.issue;
+            const { eventName } = github.context;
+            core.info(`Event name: ${eventName}`);
+            if (eventName !== GITHUB_ISSUES) {
+                core.setFailed(`Invalid event: ${eventName}`);
+                return;
+            }
+            const issuesTitle = (_a = github.context.payload.issue) === null || _a === void 0 ? void 0 : _a.title;
+            core.info(`Issues title: ${issuesTitle}`);
+            const inputPattern = core.getInput('pattern');
+            const inputFlags = core.getInput('flags');
+            const regexFlags = inputFlags === '' ? DEFAULT_FLAGS : inputFlags;
+            const regexPattern = inputPattern === '' ? DEFAULT_PATTERN : inputPattern;
+            const regex = new RegExp(regexPattern, regexFlags);
+            const regexExistsInTitle = regex.test(issuesTitle);
+            if (!regexExistsInTitle) {
+                yield client.rest.issues.addLabels({
+                    owner: issue.owner,
+                    repo: issue.repo,
+                    issue_number: issue.number,
+                    lable: ['title'],
+                });
+                return;
+            }
         }
-        const issuesTitle = (_a = github.context.payload.issue) === null || _a === void 0 ? void 0 : _a.title;
-        core.info(`Issues title: ${issuesTitle}`);
-    }
-    catch (error) {
-        if (error instanceof Error) {
-            core.setFailed(error.message);
+        catch (error) {
+            if (error instanceof Error) {
+                core.setFailed(error.message);
+            }
+            else {
+                core.setFailed('unknown error');
+            }
         }
-        else {
-            core.setFailed('unknown error');
-        }
-    }
+    });
 }
 function pull_request() {
     return;
@@ -113,7 +144,7 @@ function pull_request() {
     //     }
     // }
 }
-run();
+run().catch(error => core.setFailed(error.message)); // Catch unhandled errors
 
 
 /***/ }),
