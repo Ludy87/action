@@ -54,8 +54,8 @@ function run() {
         // action Inputs
         const token = core.getInput('token', { required: true });
         const client = github.getOctokit(token);
-        const issuesTitlePattern = core.getInput('issues_pattern');
-        const issuesPatternFlags = core.getInput('issues_pattern_flags');
+        const issuesTitlePattern = core.getInput('issues_pattern') || DEFAULT_PATTERN;
+        const issuesPatternFlags = core.getInput('issues_pattern_flags') || DEFAULT_FLAGS;
         const issuesMinLen = parseInt(core.getInput('issues_min_length'));
         const issuesMaxLen = parseInt(core.getInput('issues_max_length'));
         const issuesLabels = core
@@ -65,7 +65,7 @@ function run() {
         const issuesComment = core.getInput('issues_comment');
         core.info(`minLen: ${issuesMinLen}`);
         core.info(`maxLen: ${issuesMaxLen}`);
-        core.info(`maxLen: ${issuesLabels}`);
+        core.info(`labels: ${issuesLabels}`);
         const { eventName } = github.context;
         core.info(`Event name: ${eventName}`);
         if (eventName !== GITHUB_ISSUES) {
@@ -77,7 +77,7 @@ function run() {
     });
 }
 function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, issuesComment) {
-    var _a, _b, _c, _d;
+    var _a, _b, _c, _d, _e;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             // Get client and context
@@ -133,10 +133,8 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, is
                 });
                 // Find and delete the specific comment
                 for (const comment of comments.data) {
-                    const bo = (_b = comment.user) === null || _b === void 0 ? void 0 : _b.name;
-                    const boid = (_c = comment.user) === null || _c === void 0 ? void 0 : _c.id;
-                    core.info(bo ? bo : 'war nichts');
-                    core.error(`${boid} Hi @${author}! ${issuesComment}`); // Hier ist ein Problem
+                    const comment_user_name = (_b = comment.user) === null || _b === void 0 ? void 0 : _b.name;
+                    const comment_user_id = (_c = comment.user) === null || _c === void 0 ? void 0 : _c.id;
                     if (comment.body === `Hi @${author}! ${issuesComment}` &&
                         ((_d = comment.user) === null || _d === void 0 ? void 0 : _d.id) === 41898282) {
                         yield client.rest.issues.deleteComment({
@@ -146,8 +144,13 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, is
                         });
                         core.info(`Removed comment: ${comment.id}`);
                     }
+                    else if (((_e = comment.user) === null || _e === void 0 ? void 0 : _e.id) !== 41898282) {
+                        core.error(`${comment_user_name} (${comment_user_id}) is not allowed!`);
+                    }
+                    else {
+                        core.info("Don't find comment");
+                    }
                 }
-                core.info('Title OK.');
             }
         }
         catch (error) {
