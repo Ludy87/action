@@ -54,7 +54,7 @@ async function issues(): Promise<void> {
                 owner: issue.owner,
                 repo: issue.repo,
                 issue_number: issue.number,
-                body: "Der Title ist Mist!",
+                body: 'Der Title ist Mist!',
             });
             return;
         }
