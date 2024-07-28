@@ -1,6 +1,6 @@
 {
   "name": "pr-issues-title-verify",
-  "version": "1.3.0",
+  "version": "1.0.0",
   "description": "PR & Issues title check GitHub action",
   "main": "lib/main.js",
   "scripts": {
