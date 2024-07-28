@@ -82,7 +82,7 @@ function issues() {
                     owner: issue.owner,
                     repo: issue.repo,
                     issue_number: issue.number,
-                    lable: ['invalid'],
+                    labels: ['invalid'],
                 });
                 return;
             }
