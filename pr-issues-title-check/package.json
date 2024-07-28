@@ -1,0 +1,53 @@
+{
+  "name": "pr-issues-title-verify",
+  "version": "1.3.0",
+  "description": "PR & Issues title check GitHub action",
+  "main": "lib/main.js",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint --fix src/**/*.ts",
+    "lint:fix": "prettier --write '**/*.ts'",
+    "package": "ncc build --license licenses.txt",
+    "all": "npm run build && npm run lint && npm run package"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ludy87/action/pr-title-check"
+  },
+  "keywords": [
+    "actions",
+    "node",
+    "setup",
+    "PR",
+    "Issues",
+    "title",
+    "verify",
+    "check"
+  ],
+  "author": "Ludy87",
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "1.10.1",
+    "@actions/github": "6.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "20.14.12",
+    "@typescript-eslint/eslint-plugin": "^7.0.1",
+    "@typescript-eslint/parser": "^7.0.1",
+    "@vercel/ncc": "0.38.1",
+    "eslint": "8.56.0",
+    "eslint-config-prettier": "9.1.0",
+    "eslint-plugin-eslint-comments": "3.2.0",
+    "eslint-plugin-github": "4.10.1",
+    "eslint-plugin-import": "2.29.1",
+    "eslint-plugin-jest": "27.8.0",
+    "eslint-plugin-node": "11.1.0",
+    "eslint-plugin-prettier": "5.1.3",
+    "eslint-plugin-simple-import-sort": "12.0.0",
+    "eslint-plugin-unused-imports": "3.1.0",
+    "js-yaml": "4.1.0",
+    "npm-check-updates": "16.14.20",
+    "prettier": "3.2.5",
+    "typescript": "5.3.3"
+  }
+}

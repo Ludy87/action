@@ -1,0 +1,16 @@
+name: 'PR & Issues Title Verify'
+description: 'Check PR and Issues title against a regex'
+author: 'Ludy87'
+inputs:
+  pattern:
+    required: false
+    description: 'regex pattern to match against'
+  flags:
+    required: false
+    description: 'flags for the regex input'
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
+branding:
+  icon: 'check'
+  color: 'blue'
