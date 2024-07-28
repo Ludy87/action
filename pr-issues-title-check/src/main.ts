@@ -25,6 +25,7 @@ async function run() {
         .getInput('issues_labels')
         .split(',')
         .map((label) => label.trim());
+    const issuesComment = core.getInput('issues_comment');
 
     core.info(`minLen: ${issuesMinLen}`);
     core.info(`maxLen: ${issuesMaxLen}`);
@@ -38,7 +39,7 @@ async function run() {
         return;
     }
     pull_request();
-    await issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels);
+    await issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, issuesComment);
 }
 
 async function issues(
@@ -46,6 +47,7 @@ async function issues(
     issuesTitlePattern: string,
     issuesPatternFlags: string,
     issuesLabels: string[],
+    issuesComment: string,
 ): Promise<void> {
     try {
         // Get client and context
@@ -62,6 +64,7 @@ async function issues(
         const regexExistsInTitle = regex.test(issuesTitle);
 
         const author = github.context.actor;
+        core.info(`${author}`);
 
         if (!regexExistsInTitle) {
             await client.rest.issues.addLabels({
@@ -74,7 +77,7 @@ async function issues(
                 owner: issue.owner,
                 repo: issue.repo,
                 issue_number: issue.number,
-                body: `Hi @${author}, der Titel ist unzureichend!`,
+                body: `${issuesComment}`,
             });
             return;
         } else {
@@ -111,11 +114,8 @@ async function issues(
                 const bo = comment.body;
 
                 core.info(bo ? bo : 'war nichts');
-                core.info(`Hi @${author}, der Titel ist unzureichend!`);
-                if (
-                    comment.body ===
-                    `Hi @${author}, der Titel ist unzureichend!`
-                ) {
+                core.info(`${issuesComment}`);
+                if (comment.body === `${issuesComment}`) {
                     await client.rest.issues.deleteComment({
                         owner: issue.owner,
                         repo: issue.repo,
