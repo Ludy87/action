@@ -58,7 +58,10 @@ function run() {
         const issuesPatternFlags = core.getInput('issues_pattern_flags');
         const issuesMinLen = parseInt(core.getInput('issues_min_length'));
         const issuesMaxLen = parseInt(core.getInput('issues_max_length'));
-        const issuesLabels = core.getInput('issues_labels').split(',').map(label => label.trim());
+        const issuesLabels = core
+            .getInput('issues_labels')
+            .split(',')
+            .map((label) => label.trim());
         core.info(`minLen: ${issuesMinLen}`);
         core.info(`maxLen: ${issuesMaxLen}`);
         core.info(`maxLen: ${issuesLabels}`);
@@ -101,6 +104,12 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels) {
                 return;
             }
             else {
+                yield client.rest.issues.removeLabel({
+                    owner: issue.owner,
+                    repo: issue.repo,
+                    issue_number: issue.number,
+                    name: issuesLabels.join(",")
+                });
                 core.info('Title OK.');
             }
         }
