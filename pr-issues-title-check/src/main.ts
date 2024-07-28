@@ -1,9 +1,10 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
+import { GitHub } from '@actions/github/lib/utils';
 
 const DEFAULT_FLAGS = 'gmi';
 const DEFAULT_PATTERN =
-    '^(\\[Feature Request\\]: |\\[Bug\\]: )(?:(\\b\\w{2,}\\b\\s+){2,}\\b\\w{2,}\\b)|^(?:(\\b\\w{2,}\\b\\s+){2,}\\b\\w{2,}\\b)';
+    '^(\\[Feature Request\\]: |\\[Bug\\]: )(?:(\\b\\w{2,}\\b\\s+){2,}\\b\\w{2,}\\b)$';
 
 // const GITHUB_PULL_REQUEST_EVENT = 'pull_request';
 // const GITHUB_PULL_REQUEST_TARGET_EVENT = 'pull_request_target';
@@ -14,32 +15,44 @@ const GITHUB_ISSUES = 'issues';
 // const GITHUB_ISSUES_EDITED = 'edited';
 
 async function run() {
+    // action Inputs
+    const token = core.getInput('token', { required: true });
+    const client = github.getOctokit(token);
+    const issuesTitlePattern = core.getInput('issues_pattern');
+    const issuesPatternFlags = core.getInput('issues_pattern_flags');
+    const minLen = parseInt(core.getInput('issues_min_length'));
+    const maxLen = parseInt(core.getInput('issues_max_length'));
+
+    core.info(`minLen: ${minLen}`);
+    core.info(`maxLen: ${maxLen}`);
+
+    const { eventName } = github.context;
+    core.info(`Event name: ${eventName}`);
+
+    if (eventName !== GITHUB_ISSUES) {
+        core.setFailed(`Invalid event: ${eventName}`);
+        return;
+    }
     pull_request();
-    await issues();
+    await issues(client, issuesTitlePattern, issuesPatternFlags);
 }
 
-async function issues(): Promise<void> {
+async function issues(
+    client: InstanceType<typeof GitHub>,
+    issuesTitlePattern: string,
+    issuesPatternFlags: string,
+): Promise<void> {
     try {
         // Get client and context
-        const token = core.getInput('github_token', { required: true });
-        const client = github.getOctokit(token);
         const issue: { owner: string; repo: string; number: number } =
             github.context.issue;
-
-        const { eventName } = github.context;
-        core.info(`Event name: ${eventName}`);
-
-        if (eventName !== GITHUB_ISSUES) {
-            core.setFailed(`Invalid event: ${eventName}`);
-            return;
-        }
         const issuesTitle: string = github.context.payload.issue?.title;
         core.info(`Issues title: ${issuesTitle}`);
-        const inputPattern = core.getInput('pattern');
-        const inputFlags = core.getInput('flags');
-        const regexFlags = inputFlags === '' ? DEFAULT_FLAGS : inputFlags;
+
+        const regexFlags =
+            issuesPatternFlags === '' ? DEFAULT_FLAGS : issuesPatternFlags;
         const regexPattern =
-            inputPattern === '' ? DEFAULT_PATTERN : inputPattern;
+            issuesTitlePattern === '' ? DEFAULT_PATTERN : issuesTitlePattern;
         const regex = new RegExp(regexPattern, regexFlags);
         const regexExistsInTitle = regex.test(issuesTitle);
 
