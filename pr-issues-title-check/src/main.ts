@@ -122,7 +122,10 @@ async function issues(
 
                 core.info(bo ? bo : 'war nichts');
                 core.error(`${boid} Hi @${author}! ${issuesComment}`); // Hier ist ein Problem
-                if (comment.body === `Hi @${author}! ${issuesComment}`) {
+                if (
+                    comment.body === `Hi @${author}! ${issuesComment}` &&
+                    comment.user?.id === 41898282
+                ) {
                     await client.rest.issues.deleteComment({
                         owner: issue.owner,
                         repo: issue.repo,
