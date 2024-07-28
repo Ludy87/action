@@ -17,8 +17,10 @@ async function run() {
     // action Inputs
     const token = core.getInput('token', { required: true });
     const client = github.getOctokit(token);
-    const issuesTitlePattern = core.getInput('issues_pattern') || DEFAULT_PATTERN;
-    const issuesPatternFlags = core.getInput('issues_pattern_flags') || DEFAULT_FLAGS;
+    const issuesTitlePattern =
+        core.getInput('issues_pattern') || DEFAULT_PATTERN;
+    const issuesPatternFlags =
+        core.getInput('issues_pattern_flags') || DEFAULT_FLAGS;
     const issuesMinLen = parseInt(core.getInput('issues_min_length'));
     const issuesMaxLen = parseInt(core.getInput('issues_max_length'));
     const issuesLabels = core
