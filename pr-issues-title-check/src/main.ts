@@ -1,9 +1,9 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 
-// const DEFAULT_FLAGS = 'gmi';
-// const DEFAULT_PATTERN =
-//     '^(\\[Feature Request\\]: |\\[Bug\\]: )(?:(\\b\\w{2,}\\b\\s+){2,}\\b\\w{2,}\\b)|^(?:(\\b\\w{2,}\\b\\s+){2,}\\b\\w{2,}\\b)';
+const DEFAULT_FLAGS = 'gmi';
+const DEFAULT_PATTERN =
+    '^(\\[Feature Request\\]: |\\[Bug\\]: )(?:(\\b\\w{2,}\\b\\s+){2,}\\b\\w{2,}\\b)|^(?:(\\b\\w{2,}\\b\\s+){2,}\\b\\w{2,}\\b)';
 
 // const GITHUB_PULL_REQUEST_EVENT = 'pull_request';
 // const GITHUB_PULL_REQUEST_TARGET_EVENT = 'pull_request_target';
@@ -13,13 +13,19 @@ const GITHUB_ISSUES = 'issues';
 // const GITHUB_ISSUES_REOPENED = 'reopened';
 // const GITHUB_ISSUES_EDITED = 'edited';
 
-function run(): void {
+async function run() {
     pull_request();
-    issues();
+    await issues();
 }
 
-function issues(): void {
+async function issues(): Promise<void> {
     try {
+        // Get client and context
+        const token = core.getInput('github_token', { required: true });
+        const client = github.getOctokit(token);
+        const issue: { owner: string; repo: string; number: number } =
+            github.context.issue;
+
         const { eventName } = github.context;
         core.info(`Event name: ${eventName}`);
 
@@ -27,9 +33,25 @@ function issues(): void {
             core.setFailed(`Invalid event: ${eventName}`);
             return;
         }
-        const issuesTitle: string | undefined =
-            github.context.payload.issue?.title;
+        const issuesTitle: string = github.context.payload.issue?.title;
         core.info(`Issues title: ${issuesTitle}`);
+        const inputPattern = core.getInput('pattern');
+        const inputFlags = core.getInput('flags');
+        const regexFlags = inputFlags === '' ? DEFAULT_FLAGS : inputFlags;
+        const regexPattern =
+            inputPattern === '' ? DEFAULT_PATTERN : inputPattern;
+        const regex = new RegExp(regexPattern, regexFlags);
+        const regexExistsInTitle = regex.test(issuesTitle);
+
+        if (!regexExistsInTitle) {
+            await client.rest.issues.addLabels({
+                owner: issue.owner,
+                repo: issue.repo,
+                issue_number: issue.number,
+                lable: ['title'],
+            });
+            return;
+        }
     } catch (error) {
         if (error instanceof Error) {
             core.setFailed(error.message);
@@ -98,4 +120,4 @@ function pull_request(): void {
     // }
 }
 
-run();
+run().catch((error) => core.setFailed(error.message)); // Catch unhandled errors
