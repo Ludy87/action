@@ -77,6 +77,7 @@ function issues() {
             const regexPattern = inputPattern === '' ? DEFAULT_PATTERN : inputPattern;
             const regex = new RegExp(regexPattern, regexFlags);
             const regexExistsInTitle = regex.test(issuesTitle);
+            const author = github.context.actor;
             if (!regexExistsInTitle) {
                 yield client.rest.issues.addLabels({
                     owner: issue.owner,
@@ -88,7 +89,7 @@ function issues() {
                     owner: issue.owner,
                     repo: issue.repo,
                     issue_number: issue.number,
-                    body: "Der Title ist Mist!",
+                    body: `Hi ${author} Der Title ist Mist!`,
                 });
                 return;
             }
