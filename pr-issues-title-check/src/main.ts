@@ -21,7 +21,10 @@ async function run() {
     const issuesPatternFlags = core.getInput('issues_pattern_flags');
     const issuesMinLen = parseInt(core.getInput('issues_min_length'));
     const issuesMaxLen = parseInt(core.getInput('issues_max_length'));
-    const issuesLabels = parseInt(core.getInput('issues_labels'));
+    const issuesLabels = core
+        .getInput('issues_labels')
+        .split(',')
+        .map((label) => label.trim());
 
     core.info(`minLen: ${issuesMinLen}`);
     core.info(`maxLen: ${issuesMaxLen}`);
@@ -35,13 +38,14 @@ async function run() {
         return;
     }
     pull_request();
-    await issues(client, issuesTitlePattern, issuesPatternFlags);
+    await issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels);
 }
 
 async function issues(
     client: InstanceType<typeof GitHub>,
     issuesTitlePattern: string,
     issuesPatternFlags: string,
+    issuesLabels: string[],
 ): Promise<void> {
     try {
         // Get client and context
@@ -64,7 +68,7 @@ async function issues(
                 owner: issue.owner,
                 repo: issue.repo,
                 issue_number: issue.number,
-                labels: ['invalid'],
+                labels: issuesLabels,
             });
             await client.rest.issues.createComment({
                 owner: issue.owner,
