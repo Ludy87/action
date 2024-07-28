@@ -39,7 +39,13 @@ async function run() {
         return;
     }
     pull_request();
-    await issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, issuesComment);
+    await issues(
+        client,
+        issuesTitlePattern,
+        issuesPatternFlags,
+        issuesLabels,
+        issuesComment,
+    );
 }
 
 async function issues(
