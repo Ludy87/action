@@ -77,7 +77,7 @@ function run() {
     });
 }
 function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, issuesComment) {
-    var _a, _b, _c;
+    var _a, _b, _c, _d;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             // Get client and context
@@ -137,7 +137,8 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, is
                     const boid = (_c = comment.user) === null || _c === void 0 ? void 0 : _c.id;
                     core.info(bo ? bo : 'war nichts');
                     core.error(`${boid} Hi @${author}! ${issuesComment}`); // Hier ist ein Problem
-                    if (comment.body === `Hi @${author}! ${issuesComment}`) {
+                    if (comment.body === `Hi @${author}! ${issuesComment}` &&
+                        ((_d = comment.user) === null || _d === void 0 ? void 0 : _d.id) === 41898282) {
                         yield client.rest.issues.deleteComment({
                             owner: issue.owner,
                             repo: issue.repo,
