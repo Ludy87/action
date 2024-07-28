@@ -133,6 +133,7 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels) {
                 for (const comment of comments.data) {
                     const bo = comment.body;
                     core.info(bo ? bo : 'war nichts');
+                    core.info(`Hi @${author}, der Titel ist unzureichend!`);
                     if (comment.body ===
                         `Hi @${author}, der Titel ist unzureichend!`) {
                         yield client.rest.issues.deleteComment({
