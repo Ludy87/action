@@ -85,12 +85,12 @@ async function issues(
             });
             const labelNames = labels.data.map((label) => label.name.trim());
             core.info(`Labels on issue: ${labelNames.join(', ')}`);
-            await client.rest.issues.removeLabel({
-                owner: issue.owner,
-                repo: issue.repo,
-                issue_number: issue.number,
-                name: issuesLabels.join(','),
-            });
+            // await client.rest.issues.removeLabel({
+            //     owner: issue.owner,
+            //     repo: issue.repo,
+            //     issue_number: issue.number,
+            //     name: issuesLabels.join(','),
+            // });
             core.info('Title OK.');
         }
     } catch (error) {
