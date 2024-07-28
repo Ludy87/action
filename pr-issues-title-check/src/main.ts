@@ -43,6 +43,8 @@ async function issues(): Promise<void> {
         const regex = new RegExp(regexPattern, regexFlags);
         const regexExistsInTitle = regex.test(issuesTitle);
 
+        const author = github.context.actor;
+
         if (!regexExistsInTitle) {
             await client.rest.issues.addLabels({
                 owner: issue.owner,
@@ -54,7 +56,7 @@ async function issues(): Promise<void> {
                 owner: issue.owner,
                 repo: issue.repo,
                 issue_number: issue.number,
-                body: 'Der Title ist Mist!',
+                body: `Hi ${author} Der Title ist Mist!`,
             });
             return;
         }
