@@ -16,6 +16,10 @@ inputs:
     description: 'Max length of title. -1 to ignore the rule'
     required: false
     default: '-1'
+  issues_labels:
+    default: |
+      Title invalid
+      bad
   token:
     required: true
     description:
