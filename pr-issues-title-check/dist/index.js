@@ -101,7 +101,7 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, is
                     owner: issue.owner,
                     repo: issue.repo,
                     issue_number: issue.number,
-                    body: `${issuesComment}`,
+                    body: `Hi ${author}! ${issuesComment}`,
                 });
                 return;
             }
@@ -135,8 +135,8 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, is
                 for (const comment of comments.data) {
                     const bo = comment.body;
                     core.info(bo ? bo : 'war nichts');
-                    core.info(`${issuesComment}`);
-                    if (comment.body === `${issuesComment}`) {
+                    core.error(`Hi ${author}! ${issuesComment}`); // Hier ist ein Problem
+                    if (comment.body === `Hi ${author}! ${issuesComment}`) {
                         yield client.rest.issues.deleteComment({
                             owner: issue.owner,
                             repo: issue.repo,
