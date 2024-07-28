@@ -82,7 +82,7 @@ function issues() {
                     owner: issue.owner,
                     repo: issue.repo,
                     issue_number: issue.number,
-                    lable: ['title'],
+                    lable: ['invalid'],
                 });
                 return;
             }
@@ -144,7 +144,7 @@ function pull_request() {
     //     }
     // }
 }
-run().catch(error => core.setFailed(error.message)); // Catch unhandled errors
+run().catch((error) => core.setFailed(error.message)); // Catch unhandled errors
 
 
 /***/ }),
