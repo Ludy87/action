@@ -77,7 +77,7 @@ function run() {
     });
 }
 function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, issuesComment) {
-    var _a;
+    var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             // Get client and context
@@ -101,7 +101,7 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, is
                     owner: issue.owner,
                     repo: issue.repo,
                     issue_number: issue.number,
-                    body: `Hi ${author}! ${issuesComment}`,
+                    body: `Hi @${author}! ${issuesComment}`,
                 });
                 return;
             }
@@ -133,10 +133,11 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, is
                 });
                 // Find and delete the specific comment
                 for (const comment of comments.data) {
-                    const bo = comment.body;
+                    const bo = (_b = comment.user) === null || _b === void 0 ? void 0 : _b.name;
+                    const boid = (_c = comment.user) === null || _c === void 0 ? void 0 : _c.id;
                     core.info(bo ? bo : 'war nichts');
-                    core.error(`Hi ${author}! ${issuesComment}`); // Hier ist ein Problem
-                    if (comment.body === `Hi ${author}! ${issuesComment}`) {
+                    core.error(`${boid} Hi @${author}! ${issuesComment}`); // Hier ist ein Problem
+                    if (comment.body === `Hi @${author}! ${issuesComment}`) {
                         yield client.rest.issues.deleteComment({
                             owner: issue.owner,
                             repo: issue.repo,
