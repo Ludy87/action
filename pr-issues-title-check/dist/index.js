@@ -42,7 +42,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const DEFAULT_FLAGS = 'gmi';
-const DEFAULT_PATTERN = '^(\\[Feature Request\\]: |\\[Bug\\]: )(?:(\\b\\w{2,}\\b\\s+){2,}\\b\\w{2,}\\b)$';
+const DEFAULT_PATTERN = '^.*$';
 // const GITHUB_PULL_REQUEST_EVENT = 'pull_request';
 // const GITHUB_PULL_REQUEST_TARGET_EVENT = 'pull_request_target';
 const GITHUB_ISSUES = 'issues';
@@ -56,10 +56,12 @@ function run() {
         const client = github.getOctokit(token);
         const issuesTitlePattern = core.getInput('issues_pattern');
         const issuesPatternFlags = core.getInput('issues_pattern_flags');
-        const minLen = parseInt(core.getInput('issues_min_length'));
-        const maxLen = parseInt(core.getInput('issues_max_length'));
-        core.info(`minLen: ${minLen}`);
-        core.info(`maxLen: ${maxLen}`);
+        const issuesMinLen = parseInt(core.getInput('issues_min_length'));
+        const issuesMaxLen = parseInt(core.getInput('issues_max_length'));
+        const issuesLabels = parseInt(core.getInput('issues_labels'));
+        core.info(`minLen: ${issuesMinLen}`);
+        core.info(`maxLen: ${issuesMaxLen}`);
+        core.info(`maxLen: ${issuesLabels}`);
         const { eventName } = github.context;
         core.info(`Event name: ${eventName}`);
         if (eventName !== GITHUB_ISSUES) {
@@ -97,6 +99,9 @@ function issues(client, issuesTitlePattern, issuesPatternFlags) {
                     body: `Hi @${author} Der Title ist Mist!`,
                 });
                 return;
+            }
+            else {
+                core.info('Title OK.');
             }
         }
         catch (error) {
