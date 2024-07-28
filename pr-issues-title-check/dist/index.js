@@ -62,6 +62,7 @@ function run() {
             .getInput('issues_labels')
             .split(',')
             .map((label) => label.trim());
+        const issuesComment = core.getInput('issues_comment');
         core.info(`minLen: ${issuesMinLen}`);
         core.info(`maxLen: ${issuesMaxLen}`);
         core.info(`maxLen: ${issuesLabels}`);
@@ -72,10 +73,10 @@ function run() {
             return;
         }
         pull_request();
-        yield issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels);
+        yield issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, issuesComment);
     });
 }
-function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels) {
+function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, issuesComment) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -88,6 +89,7 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels) {
             const regex = new RegExp(regexPattern, regexFlags);
             const regexExistsInTitle = regex.test(issuesTitle);
             const author = github.context.actor;
+            core.info(`${author}`);
             if (!regexExistsInTitle) {
                 yield client.rest.issues.addLabels({
                     owner: issue.owner,
@@ -99,7 +101,7 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels) {
                     owner: issue.owner,
                     repo: issue.repo,
                     issue_number: issue.number,
-                    body: `Hi @${author}, der Titel ist unzureichend!`,
+                    body: `${issuesComment}`,
                 });
                 return;
             }
@@ -133,9 +135,8 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels) {
                 for (const comment of comments.data) {
                     const bo = comment.body;
                     core.info(bo ? bo : 'war nichts');
-                    core.info(`Hi @${author}, der Titel ist unzureichend!`);
-                    if (comment.body ===
-                        `Hi @${author}, der Titel ist unzureichend!`) {
+                    core.info(`${issuesComment}`);
+                    if (comment.body === `${issuesComment}`) {
                         yield client.rest.issues.deleteComment({
                             owner: issue.owner,
                             repo: issue.repo,
