@@ -98,6 +98,28 @@ async function issues(
                     core.info(`Removed label: ${label}`);
                 }
             }
+
+            // Fetch all comments on the issue
+            const comments = await client.rest.issues.listComments({
+                owner: issue.owner,
+                repo: issue.repo,
+                issue_number: issue.number,
+            });
+
+            // Find and delete the specific comment
+            for (const comment of comments.data) {
+                if (
+                    comment.body ===
+                    `Hi @${author}, der Titel ist unzureichend!`
+                ) {
+                    await client.rest.issues.deleteComment({
+                        owner: issue.owner,
+                        repo: issue.repo,
+                        comment_id: comment.id,
+                    });
+                    core.info(`Removed comment: ${comment.id}`);
+                }
+            }
             core.info('Title OK.');
         }
     } catch (error) {
