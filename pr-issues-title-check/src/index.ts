@@ -78,12 +78,12 @@ async function issues(
     // Get client and context
     const issue: { owner: string; repo: string; number: number } =
         github.context.issue;
-    const issuesTitle: string = github.context.payload.issue?.title;
+    let issuesTitle: string = github.context.payload.issue?.title;
     core.info(`Issues title: ${issuesTitle}`);
 
     issues_prefix.forEach((title) => {
         if (issuesTitle.includes(title)) {
-            core.info(issuesTitle.replace(title, '').trim());
+            issuesTitle = issuesTitle.replace(title, '').trim();
         }
     });
 
