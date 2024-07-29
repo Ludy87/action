@@ -4,7 +4,7 @@ import { GitHub } from '@actions/github/lib/utils';
 
 const DEFAULT_FLAGS = 'gmi';
 const DEFAULT_PATTERN = '^.*$';
-const DEFAULT_COMMENT = 'Der Titel ist unzureichend!';
+const DEFAULT_COMMENT = 'The title is insufficient!';
 
 const GITHUB_PULL_REQUEST_EVENT = 'pull_request';
 const GITHUB_PULL_REQUEST_TARGET_EVENT = 'pull_request_target';
@@ -86,7 +86,7 @@ async function issues(
 
     const inputComment =
         issuesComment === ''
-            ? `Hi ${author}! ${DEFAULT_COMMENT}`
+            ? `Hi @${author}! ${DEFAULT_COMMENT}`
             : issuesComment;
 
     // Fetch all comments on the issue
