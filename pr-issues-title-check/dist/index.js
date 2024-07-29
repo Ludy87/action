@@ -29228,7 +29228,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
-const DEFAULT_FLAGS = 'gmi';
+const DEFAULT_FLAGS = 'i';
 const DEFAULT_COMMENT = 'The title is insufficient!';
 const GITHUB_PULL_REQUEST_EVENT = 'pull_request';
 const GITHUB_PULL_REQUEST_TARGET_EVENT = 'pull_request_target';
@@ -29250,22 +29250,22 @@ function run() {
                 .getInput('issues_labels')
                 .split(',')
                 .map((label) => label.trim());
-            const issuesComment = core.getInput('issues_comment') || DEFAULT_COMMENT;
+            const issuesComment = core.getInput('issues_comment');
             const actorWithoutRestriction = core.getMultilineInput('actor_without_restriction');
             const actor = github.context.actor;
-            core.info(`${actor} actor`);
             actorWithoutRestriction.forEach((a) => {
                 if (a === actor) {
-                    core.info(`${actor} has no limitation`);
+                    core.debug(`${actor} has no limitation`);
                     no_limit = true;
                 }
                 else {
-                    core.info(a);
+                    core.debug(`${actor} has limitation`);
                 }
             });
             core.info(`minLen: ${issuesMinLen}`);
             core.info(`maxLen: ${issuesMaxLen}`);
             core.info(`labels: ${issuesLabels}`);
+            core.info(`actor: ${actor}`);
             issues_prefix.forEach((prefix) => {
                 core.info(prefix.trim());
             });
@@ -29364,7 +29364,7 @@ function issues(client, actor, issuesTitlePattern, issuesPatternFlags, issuesLab
                 return;
             }
             else {
-                core.info('Comment already exists');
+                core.debug('Comment already exists');
             }
             return;
         }
@@ -29399,7 +29399,7 @@ function issues(client, actor, issuesTitlePattern, issuesPatternFlags, issuesLab
                 core.info(`Removed comment: ${existingComment.id}`);
             }
             else {
-                core.info('No matching comment found');
+                core.debug('No matching comment found');
             }
         }
         core.setOutput('valid', 'true');
