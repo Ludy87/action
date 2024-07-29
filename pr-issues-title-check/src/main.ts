@@ -5,8 +5,8 @@ import { GitHub } from '@actions/github/lib/utils';
 const DEFAULT_FLAGS = 'gmi';
 const DEFAULT_PATTERN = '^.*$';
 
-// const GITHUB_PULL_REQUEST_EVENT = 'pull_request';
-// const GITHUB_PULL_REQUEST_TARGET_EVENT = 'pull_request_target';
+const GITHUB_PULL_REQUEST_EVENT = 'pull_request';
+const GITHUB_PULL_REQUEST_TARGET_EVENT = 'pull_request_target';
 
 const GITHUB_ISSUES = 'issues';
 // const GITHUB_ISSUES_OPENED = 'opened';
@@ -14,40 +14,53 @@ const GITHUB_ISSUES = 'issues';
 // const GITHUB_ISSUES_EDITED = 'edited';
 
 async function run() {
-    // action Inputs
-    const token = core.getInput('token', { required: true });
-    const client = github.getOctokit(token);
-    const issuesTitlePattern =
-        core.getInput('issues_pattern') || DEFAULT_PATTERN;
-    const issuesPatternFlags =
-        core.getInput('issues_pattern_flags') || DEFAULT_FLAGS;
-    const issuesMinLen = parseInt(core.getInput('issues_min_length'));
-    const issuesMaxLen = parseInt(core.getInput('issues_max_length'));
-    const issuesLabels = core
-        .getInput('issues_labels')
-        .split(',')
-        .map((label) => label.trim());
-    const issuesComment = core.getInput('issues_comment');
+    try {
+        // action Inputs
+        const token = core.getInput('token', { required: true });
+        const client = github.getOctokit(token);
+        const issuesTitlePattern =
+            core.getInput('issues_pattern') || DEFAULT_PATTERN;
+        const issuesPatternFlags =
+            core.getInput('issues_pattern_flags') || DEFAULT_FLAGS;
+        const issuesMinLen = parseInt(core.getInput('issues_min_length'));
+        const issuesMaxLen = parseInt(core.getInput('issues_max_length'));
+        const issuesLabels = core
+            .getInput('issues_labels')
+            .split(',')
+            .map((label) => label.trim());
+        const issuesComment = core.getInput('issues_comment');
 
-    core.info(`minLen: ${issuesMinLen}`);
-    core.info(`maxLen: ${issuesMaxLen}`);
-    core.info(`labels: ${issuesLabels}`);
+        core.info(`minLen: ${issuesMinLen}`);
+        core.info(`maxLen: ${issuesMaxLen}`);
+        core.info(`labels: ${issuesLabels}`);
 
-    const { eventName } = github.context;
-    core.info(`Event name: ${eventName}`);
+        const { eventName } = github.context;
+        core.info(`Event name: ${eventName}`);
 
-    if (eventName !== GITHUB_ISSUES) {
-        core.setFailed(`Invalid event: ${eventName}`);
-        return;
+        if (eventName === GITHUB_ISSUES) {
+            await issues(
+                client,
+                issuesTitlePattern,
+                issuesPatternFlags,
+                issuesLabels,
+                issuesComment,
+            );
+        } else if (
+            eventName !== GITHUB_PULL_REQUEST_EVENT &&
+            eventName !== GITHUB_PULL_REQUEST_TARGET_EVENT
+        ) {
+            pull_request();
+        } else {
+            core.setFailed(`Invalid event: ${eventName}`);
+            return;
+        }
+    } catch (error) {
+        if (error instanceof Error) {
+            core.setFailed(error.message);
+        } else {
+            core.setFailed('unknown error');
+        }
     }
-    pull_request();
-    await issues(
-        client,
-        issuesTitlePattern,
-        issuesPatternFlags,
-        issuesLabels,
-        issuesComment,
-    );
 }
 
 async function issues(
@@ -57,95 +70,98 @@ async function issues(
     issuesLabels: string[],
     issuesComment: string,
 ): Promise<void> {
-    try {
-        // Get client and context
-        const issue: { owner: string; repo: string; number: number } =
-            github.context.issue;
-        const issuesTitle: string = github.context.payload.issue?.title;
-        core.info(`Issues title: ${issuesTitle}`);
+    // Get client and context
+    const issue: { owner: string; repo: string; number: number } =
+        github.context.issue;
+    const issuesTitle: string = github.context.payload.issue?.title;
+    core.info(`Issues title: ${issuesTitle}`);
 
-        const regexFlags =
-            issuesPatternFlags === '' ? DEFAULT_FLAGS : issuesPatternFlags;
-        const regexPattern =
-            issuesTitlePattern === '' ? DEFAULT_PATTERN : issuesTitlePattern;
-        const regex = new RegExp(regexPattern, regexFlags);
-        const regexExistsInTitle = regex.test(issuesTitle);
+    const regexFlags =
+        issuesPatternFlags === '' ? DEFAULT_FLAGS : issuesPatternFlags;
+    const regexPattern =
+        issuesTitlePattern === '' ? DEFAULT_PATTERN : issuesTitlePattern;
+    const regex = new RegExp(regexPattern, regexFlags);
+    const regexExistsInTitle = regex.test(issuesTitle);
 
-        const author = github.context.actor;
-        core.info(`${author}`);
+    const author = github.context.actor;
+    core.info(`${author}`);
 
-        if (!regexExistsInTitle) {
-            await client.rest.issues.addLabels({
-                owner: issue.owner,
-                repo: issue.repo,
-                issue_number: issue.number,
-                labels: issuesLabels,
-            });
-            await client.rest.issues.createComment({
-                owner: issue.owner,
-                repo: issue.repo,
-                issue_number: issue.number,
-                body: `Hi @${author}! ${issuesComment}`,
-            });
-            return;
-        } else {
-            const labels = await client.rest.issues.listLabelsOnIssue({
-                owner: issue.owner,
-                repo: issue.repo,
-                issue_number: issue.number,
-            });
-            const labelNames = labels.data.map((label) => label.name.trim());
-            core.info(`Labels on issue: ${labelNames.join(', ')}`);
+    // Fetch all comments on the issue
+    const comments = await client.rest.issues.listComments({
+        owner: issue.owner,
+        repo: issue.repo,
+        issue_number: issue.number,
+    });
 
-            // Remove only labels from issuesLabels
-            for (const label of issuesLabels) {
-                if (labelNames.includes(label)) {
-                    await client.rest.issues.removeLabel({
-                        owner: issue.owner,
-                        repo: issue.repo,
-                        issue_number: issue.number,
-                        name: label,
-                    });
-                    core.info(`Removed label: ${label}`);
-                }
-            }
-
-            // Fetch all comments on the issue
-            const comments = await client.rest.issues.listComments({
-                owner: issue.owner,
-                repo: issue.repo,
-                issue_number: issue.number,
-            });
-
-            // Find and delete the specific comment
-            for (const comment of comments.data) {
-                const comment_user_name = comment.user?.name;
-                const comment_user_id = comment.user?.id;
-
-                if (
-                    comment.body === `Hi @${author}! ${issuesComment}` &&
-                    comment.user?.id === 41898282
-                ) {
-                    await client.rest.issues.deleteComment({
-                        owner: issue.owner,
-                        repo: issue.repo,
-                        comment_id: comment.id,
-                    });
-                    core.info(`Removed comment: ${comment.id}`);
-                } else if (comment.user?.id !== 41898282) {
-                    core.error(
-                        `${comment_user_name} (${comment_user_id}) is not allowed!`,
-                    );
-                } else {
-                    core.info("Don't find comment");
-                }
+    if (!regexExistsInTitle) {
+        await client.rest.issues.addLabels({
+            owner: issue.owner,
+            repo: issue.repo,
+            issue_number: issue.number,
+            labels: issuesLabels,
+        });
+        // Find and create the specific comment
+        for (const comment of comments.data) {
+            if (
+                comment.body !== `Hi @${author}! ${issuesComment}` ||
+                comment.user?.id !== 41898282
+            ) {
+                await client.rest.issues.createComment({
+                    owner: issue.owner,
+                    repo: issue.repo,
+                    issue_number: issue.number,
+                    body: `Hi @${author}! ${issuesComment}`,
+                });
+                core.info(`Create comment: ${comment.id}`);
+            } else {
+                core.info('Comment found');
             }
         }
-    } catch (error) {
-        if (error instanceof Error) {
-            core.setFailed(error.message);
-        } else {
-            core.setFailed('unknown error');
+        return;
+    } else {
+        const labels = await client.rest.issues.listLabelsOnIssue({
+            owner: issue.owner,
+            repo: issue.repo,
+            issue_number: issue.number,
+        });
+        const labelNames = labels.data.map((label) => label.name.trim());
+        core.info(`Labels on issue: ${labelNames.join(', ')}`);
+
+        // Remove only labels from issuesLabels
+        for (const label of issuesLabels) {
+            if (labelNames.includes(label)) {
+                await client.rest.issues.removeLabel({
+                    owner: issue.owner,
+                    repo: issue.repo,
+                    issue_number: issue.number,
+                    name: label,
+                });
+                core.info(`Removed label: ${label}`);
+            }
+        }
+
+        // Find and delete the specific comment
+        for (const comment of comments.data) {
+            const comment_user_name = comment.user?.name;
+            const comment_user_id = comment.user?.id;
+
+            if (
+                comment.body === `Hi @${author}! ${issuesComment}` &&
+                comment.user?.id === 41898282
+            ) {
+                await client.rest.issues.deleteComment({
+                    owner: issue.owner,
+                    repo: issue.repo,
+                    comment_id: comment.id,
+                });
+                core.info(`Removed comment: ${comment.id}`);
+            } else if (comment.user?.id !== 41898282) {
+                core.error(
+                    `${comment_user_name} (${comment_user_id}) is not allowed!`,
+                );
+            } else {
+                core.info("Don't find comment");
+            }
         }
     }
 }
