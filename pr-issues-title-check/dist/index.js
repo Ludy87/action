@@ -1,4 +1,4 @@
-/******/ (() => { // webpackBootstrap
+require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
 /***/ 7351:
@@ -29253,6 +29253,11 @@ function run() {
             core.info(`minLen: ${issuesMinLen}`);
             core.info(`maxLen: ${issuesMaxLen}`);
             core.info(`labels: ${issuesLabels}`);
+            const tests = core.getMultilineInput('test');
+            tests.forEach((test) => {
+                core.info(test.trim());
+            });
+            core.notice(tests.map((test) => test.trim()).join(', '));
             const { eventName } = github.context;
             core.notice(`Event name: ${eventName}`);
             if (eventName === GITHUB_ISSUES) {
@@ -29280,12 +29285,14 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, is
         const issuesTitle = (_a = github.context.payload.issue) === null || _a === void 0 ? void 0 : _a.title;
         core.info(`Issues title: ${issuesTitle}`);
         // Check min length
-        if (issuesTitle.length < issuesMinLen) {
+        if (!isNaN(issuesMinLen) && issuesTitle.length < issuesMinLen) {
             core.setFailed(`Issues title "${issuesTitle}" is smaller than min length specified - ${issuesMinLen}`);
             return;
         }
         // Check max length
-        if (issuesMaxLen > 0 && issuesTitle.length > issuesMaxLen) {
+        if (!isNaN(issuesMaxLen) &&
+            issuesMaxLen > 0 &&
+            issuesTitle.length > issuesMaxLen) {
             core.setFailed(`Issues title "${issuesTitle}" is greater than max length specified - ${issuesMaxLen}`);
             return;
         }
@@ -31315,3 +31322,4 @@ module.exports = parseParams
 /******/ 	
 /******/ })()
 ;
+//# sourceMappingURL=index.js.map
