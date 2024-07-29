@@ -2,7 +2,7 @@ import * as core from '@actions/core';
 import * as github from '@actions/github';
 import { GitHub } from '@actions/github/lib/utils';
 
-const DEFAULT_FLAGS = 'gmi';
+const DEFAULT_FLAGS = 'i';
 const DEFAULT_COMMENT = 'The title is insufficient!';
 
 const GITHUB_PULL_REQUEST_EVENT = 'pull_request';
@@ -27,28 +27,26 @@ async function run(): Promise<void> {
             .getInput('issues_labels')
             .split(',')
             .map((label) => label.trim());
-        const issuesComment =
-            core.getInput('issues_comment') || DEFAULT_COMMENT;
+        const issuesComment = core.getInput('issues_comment');
 
         const actorWithoutRestriction = core.getMultilineInput(
             'actor_without_restriction',
         );
         const actor = github.context.actor;
 
-        core.info(`${actor} actor`);
-
         actorWithoutRestriction.forEach((a) => {
             if (a === actor) {
-                core.info(`${actor} has no limitation`);
+                core.debug(`${actor} has no limitation`);
                 no_limit = true;
             } else {
-                core.info(a);
+                core.debug(`${actor} has limitation`);
             }
         });
 
         core.info(`minLen: ${issuesMinLen}`);
         core.info(`maxLen: ${issuesMaxLen}`);
         core.info(`labels: ${issuesLabels}`);
+        core.info(`actor: ${actor}`);
 
         issues_prefix.forEach((prefix) => {
             core.info(prefix.trim());
@@ -188,7 +186,7 @@ async function issues(
             core.info(`Create comment`);
             return;
         } else {
-            core.info('Comment already exists');
+            core.debug('Comment already exists');
         }
         return;
     } else {
@@ -223,7 +221,7 @@ async function issues(
             });
             core.info(`Removed comment: ${existingComment.id}`);
         } else {
-            core.info('No matching comment found');
+            core.debug('No matching comment found');
         }
     }
     core.setOutput('valid', 'true');
