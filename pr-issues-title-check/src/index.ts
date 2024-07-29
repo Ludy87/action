@@ -26,8 +26,7 @@ async function run(): Promise<void> {
             .getInput('issues_labels')
             .split(',')
             .map((label) => label.trim());
-        const issuesComment =
-            core.getInput('issues_comment') || DEFAULT_COMMENT;
+        const issuesComment = core.getInput('issues_comment');
 
         core.info(`minLen: ${issuesMinLen}`);
         core.info(`maxLen: ${issuesMaxLen}`);
