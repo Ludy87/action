@@ -57,11 +57,11 @@ async function run(): Promise<void> {
         ) {
             await pull_request();
         } else {
-            core.setFailed(`Invalid event: ${eventName}`);
+            core.error(`Invalid event: ${eventName}`);
             return;
         }
     } catch (error) {
-        core.setFailed((error as Error)?.message ?? 'Unknown error');
+        core.error((error as Error)?.message ?? 'Unknown error');
     }
 }
 
@@ -90,7 +90,7 @@ async function issues(
 
     // Check min length
     if (!isNaN(issuesMinLen) && issuesTitle.length < issuesMinLen) {
-        core.setFailed(
+        core.error(
             `Issues title "${issuesTitle}" is smaller than min length specified - ${issuesMinLen}`,
         );
         return;
@@ -102,7 +102,7 @@ async function issues(
         issuesMaxLen > 0 &&
         issuesTitle.length > issuesMaxLen
     ) {
-        core.setFailed(
+        core.error(
             `Issues title "${issuesTitle}" is greater than max length specified - ${issuesMaxLen}`,
         );
         return;
