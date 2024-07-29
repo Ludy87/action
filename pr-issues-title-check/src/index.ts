@@ -32,12 +32,11 @@ async function run(): Promise<void> {
         core.info(`maxLen: ${issuesMaxLen}`);
         core.info(`labels: ${issuesLabels}`);
 
-        const tests = core.getMultilineInput('test');
+        const issues_prefix = core.getMultilineInput('issues_prefix');
 
-        tests.forEach((test) => {
-            core.info(test.trim());
+        issues_prefix.forEach((prefix) => {
+            core.info(prefix.trim());
         });
-        core.notice(tests.map((test) => test.trim()).join(', '));
 
         const { eventName } = github.context;
         core.notice(`Event name: ${eventName}`);
