@@ -43,7 +43,7 @@ const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const DEFAULT_FLAGS = 'gmi';
 const DEFAULT_PATTERN = '^.*$';
-const DEFAULT_COMMENT = 'Der Titel ist unzureichend!';
+const DEFAULT_COMMENT = 'The title is insufficient!';
 const GITHUB_PULL_REQUEST_EVENT = 'pull_request';
 const GITHUB_PULL_REQUEST_TARGET_EVENT = 'pull_request_target';
 const GITHUB_ISSUES = 'issues';
@@ -103,7 +103,7 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, is
         const author = github.context.actor;
         core.info(`${author}`);
         const inputComment = issuesComment === ''
-            ? `Hi ${author}! ${DEFAULT_COMMENT}`
+            ? `Hi @${author}! ${DEFAULT_COMMENT}`
             : issuesComment;
         // Fetch all comments on the issue
         const comments = yield client.rest.issues.listComments({
