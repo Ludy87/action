@@ -81,10 +81,11 @@ async function issues(
     const regex = new RegExp(regexPattern, regexFlags);
     const regexExistsInTitle = regex.test(issuesTitle);
 
-    const inputComment = issuesComment === '' ? DEFAULT_COMMENT : issuesComment;
-
     const author = github.context.actor;
     core.info(`${author}`);
+
+    const inputComment =
+        issuesComment === '' ? `Hi {author}! {DEFAULT_COMMENT}` : issuesComment;
 
     // Fetch all comments on the issue
     const comments = await client.rest.issues.listComments({
