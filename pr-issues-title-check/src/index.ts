@@ -39,6 +39,8 @@ async function run(): Promise<void> {
         actorWithoutRestriction.forEach((a) => {
             if (a === actor) {
                 core.info(`${actor} has no limitation`);
+                // eslint-disable-next-line no-process-exit
+                process.exit(1); // Use process.exit instead of exit
                 return;
             }
             core.info(a);
