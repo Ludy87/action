@@ -29229,7 +29229,6 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const DEFAULT_FLAGS = 'gmi';
-const DEFAULT_PATTERN = '^.*$';
 const DEFAULT_COMMENT = 'The title is insufficient!';
 const GITHUB_PULL_REQUEST_EVENT = 'pull_request';
 const GITHUB_PULL_REQUEST_TARGET_EVENT = 'pull_request_target';
@@ -29242,7 +29241,7 @@ function run() {
             // action Inputs
             const token = core.getInput('token', { required: true });
             const client = github.getOctokit(token);
-            const issuesTitlePattern = core.getInput('issues_pattern') || DEFAULT_PATTERN;
+            const issuesTitlePattern = core.getInput('issues_pattern');
             const issues_prefix = core.getMultilineInput('issues_prefix');
             const issuesPatternFlags = core.getInput('issues_pattern_flags') || DEFAULT_FLAGS;
             const issuesMinLen = parseInt(core.getInput('issues_min_length'));
@@ -29251,7 +29250,7 @@ function run() {
                 .getInput('issues_labels')
                 .split(',')
                 .map((label) => label.trim());
-            const issuesComment = core.getInput('issues_comment');
+            const issuesComment = core.getInput('issues_comment') || DEFAULT_COMMENT;
             const actorWithoutRestriction = core.getMultilineInput('actor_without_restriction');
             const actor = github.context.actor;
             core.info(`${actor} actor`);
@@ -29275,8 +29274,8 @@ function run() {
             if (eventName === GITHUB_ISSUES) {
                 yield issues(client, actor, issuesTitlePattern, issuesPatternFlags, issuesLabels, issuesComment, issuesMinLen, issuesMaxLen, issues_prefix);
             }
-            else if (eventName !== GITHUB_PULL_REQUEST_EVENT &&
-                eventName !== GITHUB_PULL_REQUEST_TARGET_EVENT) {
+            else if (eventName === GITHUB_PULL_REQUEST_EVENT ||
+                eventName === GITHUB_PULL_REQUEST_TARGET_EVENT) {
                 yield pull_request();
             }
             else {
@@ -29302,34 +29301,36 @@ function issues(client, actor, issuesTitlePattern, issuesPatternFlags, issuesLab
                 issuesTitle = issuesTitle.replace(title, '').trim();
             }
         });
-        let lenths_fail = '';
-        // Check min length
-        if (!isNaN(issuesMinLen) &&
-            issuesTitle.length < issuesMinLen &&
-            !no_limit) {
-            core.error(`Issues title "${issues_title}" is smaller than min length specified - ${issuesMinLen}`);
-            lenths_fail += `
-
-        Issues title "${issues_title}" is smaller than min length specified - ${issuesMinLen}`;
-        }
-        // Check max length
-        if (!isNaN(issuesMaxLen) &&
-            issuesMaxLen > 0 &&
-            issuesTitle.length > issuesMaxLen &&
-            !no_limit) {
-            core.error(`Issues title "${issues_title}" is greater than max length specified - ${issuesMaxLen}`);
-            lenths_fail += `
-
-        Issues title "${issues_title}" is greater than max length specified - ${issuesMaxLen}`;
-        }
-        issuesTitle = issues_title;
+        let lengths_fail = '';
+        // Check if regex is provided
         const regexFlags = issuesPatternFlags;
         const regexPattern = issuesTitlePattern;
         const regex = new RegExp(regexPattern, regexFlags);
         const regexExistsInTitle = regex.test(issuesTitle);
+        if (!regexPattern) {
+            // Check min length
+            if (!isNaN(issuesMinLen) &&
+                issuesTitle.length < issuesMinLen &&
+                !no_limit) {
+                core.error(`Issues title "${issues_title}" is smaller than min length specified - ${issuesMinLen}`);
+                lengths_fail += `
+
+            Issues title "${issues_title}" is smaller than min length specified - ${issuesMinLen}`;
+            }
+            // Check max length
+            if (!isNaN(issuesMaxLen) &&
+                issuesMaxLen > 0 &&
+                issuesTitle.length > issuesMaxLen &&
+                !no_limit) {
+                core.error(`Issues title "${issues_title}" is greater than max length specified - ${issuesMaxLen}`);
+                lengths_fail += `
+
+            Issues title "${issues_title}" is greater than max length specified - ${issuesMaxLen}`;
+            }
+        }
         const inputComment = issuesComment === ''
             ? `Hi @${actor}! ${DEFAULT_COMMENT}`
-            : issuesComment;
+            : `${issuesComment}`;
         // Fetch all comments on the issue
         const comments = yield client.rest.issues.listComments({
             owner: issue.owner,
@@ -29341,7 +29342,9 @@ function issues(client, actor, issuesTitlePattern, issuesPatternFlags, issuesLab
             return ((_a = comment.body) === null || _a === void 0 ? void 0 : _a.startsWith(inputComment)) &&
                 ((_b = comment.user) === null || _b === void 0 ? void 0 : _b.id) === 41898282;
         });
-        if (!regexExistsInTitle && !no_limit) {
+        if ((!regexExistsInTitle || lengths_fail) &&
+            !no_limit &&
+            (isNaN(issuesMaxLen) || isNaN(issuesMinLen))) {
             // add Labels from input
             yield client.rest.issues.addLabels({
                 owner: issue.owner,
@@ -29355,7 +29358,7 @@ function issues(client, actor, issuesTitlePattern, issuesPatternFlags, issuesLab
                     owner: issue.owner,
                     repo: issue.repo,
                     issue_number: issue.number,
-                    body: inputComment + lenths_fail,
+                    body: inputComment + lengths_fail,
                 });
                 core.info(`Create comment`);
                 return;
