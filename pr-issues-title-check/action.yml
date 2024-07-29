@@ -27,7 +27,7 @@ inputs:
     required: false
     default: 'The title is insufficient!'
   token:
-    description: 'Token for the repository. Can be passed in using ${{ secrets.GITHUB_TOKEN }}.'
+    description: 'Token for the repository. Can be passed in using GITHUB_TOKEN.'
     required: true
     default: ${{ github.token }}
 outputs:
