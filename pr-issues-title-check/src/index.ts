@@ -3,7 +3,6 @@ import * as github from '@actions/github';
 import { GitHub } from '@actions/github/lib/utils';
 
 const DEFAULT_FLAGS = 'gmi';
-const DEFAULT_PATTERN = '^.*$';
 const DEFAULT_COMMENT = 'The title is insufficient!';
 
 const GITHUB_PULL_REQUEST_EVENT = 'pull_request';
@@ -18,8 +17,7 @@ async function run(): Promise<void> {
         // action Inputs
         const token = core.getInput('token', { required: true });
         const client = github.getOctokit(token);
-        const issuesTitlePattern =
-            core.getInput('issues_pattern') || DEFAULT_PATTERN;
+        const issuesTitlePattern = core.getInput('issues_pattern');
         const issues_prefix = core.getMultilineInput('issues_prefix');
         const issuesPatternFlags =
             core.getInput('issues_pattern_flags') || DEFAULT_FLAGS;
@@ -29,7 +27,8 @@ async function run(): Promise<void> {
             .getInput('issues_labels')
             .split(',')
             .map((label) => label.trim());
-        const issuesComment = core.getInput('issues_comment');
+        const issuesComment =
+            core.getInput('issues_comment') || DEFAULT_COMMENT;
 
         const actorWithoutRestriction = core.getMultilineInput(
             'actor_without_restriction',
@@ -71,8 +70,8 @@ async function run(): Promise<void> {
                 issues_prefix,
             );
         } else if (
-            eventName !== GITHUB_PULL_REQUEST_EVENT &&
-            eventName !== GITHUB_PULL_REQUEST_TARGET_EVENT
+            eventName === GITHUB_PULL_REQUEST_EVENT ||
+            eventName === GITHUB_PULL_REQUEST_TARGET_EVENT
         ) {
             await pull_request();
         } else {
@@ -108,48 +107,49 @@ async function issues(
         }
     });
 
-    let lenths_fail = '';
+    let lengths_fail = '';
 
-    // Check min length
-    if (
-        !isNaN(issuesMinLen) &&
-        issuesTitle.length < issuesMinLen &&
-        !no_limit
-    ) {
-        core.error(
-            `Issues title "${issues_title}" is smaller than min length specified - ${issuesMinLen}`,
-        );
-        lenths_fail += `
-
-        Issues title "${issues_title}" is smaller than min length specified - ${issuesMinLen}`;
-    }
-
-    // Check max length
-    if (
-        !isNaN(issuesMaxLen) &&
-        issuesMaxLen > 0 &&
-        issuesTitle.length > issuesMaxLen &&
-        !no_limit
-    ) {
-        core.error(
-            `Issues title "${issues_title}" is greater than max length specified - ${issuesMaxLen}`,
-        );
-        lenths_fail += `
-
-        Issues title "${issues_title}" is greater than max length specified - ${issuesMaxLen}`;
-    }
-
-    issuesTitle = issues_title;
-
+    // Check if regex is provided
     const regexFlags = issuesPatternFlags;
     const regexPattern = issuesTitlePattern;
     const regex = new RegExp(regexPattern, regexFlags);
     const regexExistsInTitle = regex.test(issuesTitle);
 
+    if (!regexPattern) {
+        // Check min length
+        if (
+            !isNaN(issuesMinLen) &&
+            issuesTitle.length < issuesMinLen &&
+            !no_limit
+        ) {
+            core.error(
+                `Issues title "${issues_title}" is smaller than min length specified - ${issuesMinLen}`,
+            );
+            lengths_fail += `
+
+            Issues title "${issues_title}" is smaller than min length specified - ${issuesMinLen}`;
+        }
+
+        // Check max length
+        if (
+            !isNaN(issuesMaxLen) &&
+            issuesMaxLen > 0 &&
+            issuesTitle.length > issuesMaxLen &&
+            !no_limit
+        ) {
+            core.error(
+                `Issues title "${issues_title}" is greater than max length specified - ${issuesMaxLen}`,
+            );
+            lengths_fail += `
+
+            Issues title "${issues_title}" is greater than max length specified - ${issuesMaxLen}`;
+        }
+    }
+
     const inputComment =
         issuesComment === ''
             ? `Hi @${actor}! ${DEFAULT_COMMENT}`
-            : issuesComment;
+            : `${issuesComment}`;
 
     // Fetch all comments on the issue
     const comments = await client.rest.issues.listComments({
@@ -164,7 +164,11 @@ async function issues(
             comment.user?.id === 41898282,
     );
 
-    if (!regexExistsInTitle && !no_limit) {
+    if (
+        (!regexExistsInTitle || lengths_fail) &&
+        !no_limit &&
+        (isNaN(issuesMaxLen) || isNaN(issuesMinLen))
+    ) {
         // add Labels from input
         await client.rest.issues.addLabels({
             owner: issue.owner,
@@ -179,7 +183,7 @@ async function issues(
                 owner: issue.owner,
                 repo: issue.repo,
                 issue_number: issue.number,
-                body: inputComment + lenths_fail,
+                body: inputComment + lengths_fail,
             });
             core.info(`Create comment`);
             return;
