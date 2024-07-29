@@ -6,6 +6,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "ncc build ./src/index.ts --out dist --source-map",
+    "build:lint": "npm run lint",
     "package": "ncc build ./src/index.ts --out dist --license licenses.txt",
     "lint": "eslint --fix src/**/*.ts",
     "lint:tsc": "tsc",
