@@ -29281,11 +29281,11 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, is
     return __awaiter(this, void 0, void 0, function* () {
         // Get client and context
         const issue = github.context.issue;
-        const issuesTitle = (_a = github.context.payload.issue) === null || _a === void 0 ? void 0 : _a.title;
+        let issuesTitle = (_a = github.context.payload.issue) === null || _a === void 0 ? void 0 : _a.title;
         core.info(`Issues title: ${issuesTitle}`);
         issues_prefix.forEach((title) => {
             if (issuesTitle.includes(title)) {
-                core.info(issuesTitle.replace(title, '').trim());
+                issuesTitle = issuesTitle.replace(title, '').trim();
             }
         });
         // Check min length
