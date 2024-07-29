@@ -113,6 +113,12 @@ async function issues(
     const regex = new RegExp(regexPattern, regexFlags);
     const regexExistsInTitle = regex.test(issuesTitle);
 
+    if (!regexPattern && isNaN(issuesMinLen) && isNaN(issuesMaxLen)) {
+        core.setFailed(
+            'issues_pattern or (issues_min_length && issues_min_length) müssen angegeben werden',
+        );
+    }
+
     if (!regexPattern) {
         // Check min length
         if (
@@ -168,13 +174,14 @@ async function issues(
         (isNaN(issuesMaxLen) || isNaN(issuesMinLen))
     ) {
         // add Labels from input
-        await client.rest.issues.addLabels({
-            owner: issue.owner,
-            repo: issue.repo,
-            issue_number: issue.number,
-            labels: issuesLabels,
-        });
-
+        if (issuesLabels.length > 0) {
+            await client.rest.issues.addLabels({
+                owner: issue.owner,
+                repo: issue.repo,
+                issue_number: issue.number,
+                labels: issuesLabels,
+            });
+        }
         // Create the specific comment if not exists
         if (!existingComment) {
             await client.rest.issues.createComment({
