@@ -32,6 +32,13 @@ async function run(): Promise<void> {
         core.info(`maxLen: ${issuesMaxLen}`);
         core.info(`labels: ${issuesLabels}`);
 
+        const tests = core.getMultilineInput('test');
+
+        tests.forEach((test) => {
+            core.info(test.trim());
+        });
+        core.notice(tests.map((test) => test.trim()).join(', '));
+
         const { eventName } = github.context;
         core.notice(`Event name: ${eventName}`);
 
@@ -75,7 +82,7 @@ async function issues(
     core.info(`Issues title: ${issuesTitle}`);
 
     // Check min length
-    if (issuesTitle.length < issuesMinLen) {
+    if (!isNaN(issuesMinLen) && issuesTitle.length < issuesMinLen) {
         core.setFailed(
             `Issues title "${issuesTitle}" is smaller than min length specified - ${issuesMinLen}`,
         );
@@ -83,7 +90,11 @@ async function issues(
     }
 
     // Check max length
-    if (issuesMaxLen > 0 && issuesTitle.length > issuesMaxLen) {
+    if (
+        !isNaN(issuesMaxLen) &&
+        issuesMaxLen > 0 &&
+        issuesTitle.length > issuesMaxLen
+    ) {
         core.setFailed(
             `Issues title "${issuesTitle}" is greater than max length specified - ${issuesMaxLen}`,
         );
