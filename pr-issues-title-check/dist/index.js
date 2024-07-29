@@ -1,4 +1,4 @@
-/******/ (() => { // webpackBootstrap
+require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
 /***/ 7351:
@@ -29279,15 +29279,14 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, is
         const issue = github.context.issue;
         const issuesTitle = (_a = github.context.payload.issue) === null || _a === void 0 ? void 0 : _a.title;
         core.info(`Issues title: ${issuesTitle}`);
-        const regexFlags = issuesPatternFlags === '' ? DEFAULT_FLAGS : issuesPatternFlags;
-        const regexPattern = issuesTitlePattern === '' ? DEFAULT_PATTERN : issuesTitlePattern;
+        const regexFlags = issuesPatternFlags;
+        const regexPattern = issuesTitlePattern;
         const regex = new RegExp(regexPattern, regexFlags);
         const regexExistsInTitle = regex.test(issuesTitle);
         const author = github.context.actor;
-        core.info(`${author}`);
         const inputComment = issuesComment === ''
             ? `Hi @${author}! ${DEFAULT_COMMENT}`
-            : `${issuesComment}`;
+            : issuesComment;
         // Fetch all comments on the issue
         const comments = yield client.rest.issues.listComments({
             owner: issue.owner,
@@ -29309,7 +29308,7 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, is
                     owner: issue.owner,
                     repo: issue.repo,
                     issue_number: issue.number,
-                    body: `${inputComment}`,
+                    body: inputComment,
                 });
                 core.info(`Create comment`);
                 return;
@@ -29353,6 +29352,7 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, is
                 core.info('No matching comment found');
             }
         }
+        core.setOutput('valid', 'true');
     });
 }
 function pull_request() {
@@ -31303,3 +31303,4 @@ module.exports = parseParams
 /******/ 	
 /******/ })()
 ;
+//# sourceMappingURL=index.js.map
