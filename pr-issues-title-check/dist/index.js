@@ -29253,11 +29253,10 @@ function run() {
             core.info(`minLen: ${issuesMinLen}`);
             core.info(`maxLen: ${issuesMaxLen}`);
             core.info(`labels: ${issuesLabels}`);
-            const tests = core.getMultilineInput('test');
-            tests.forEach((test) => {
-                core.info(test.trim());
+            const issues_prefix = core.getMultilineInput('issues_prefix');
+            issues_prefix.forEach((prefix) => {
+                core.info(prefix.trim());
             });
-            core.notice(tests.map((test) => test.trim()).join(', '));
             const { eventName } = github.context;
             core.notice(`Event name: ${eventName}`);
             if (eventName === GITHUB_ISSUES) {
