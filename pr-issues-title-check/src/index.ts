@@ -11,6 +11,8 @@ const GITHUB_PULL_REQUEST_TARGET_EVENT = 'pull_request_target';
 
 const GITHUB_ISSUES = 'issues';
 
+let no_limit = false;
+
 async function run(): Promise<void> {
     try {
         // action Inputs
@@ -39,11 +41,10 @@ async function run(): Promise<void> {
         actorWithoutRestriction.forEach((a) => {
             if (a === actor) {
                 core.info(`${actor} has no limitation`);
-                // eslint-disable-next-line no-process-exit
-                process.exit(1); // Use process.exit instead of exit
-                return;
+                no_limit = true;
+            } else {
+                core.info(a);
             }
-            core.info(a);
         });
 
         core.info(`minLen: ${issuesMinLen}`);
@@ -110,7 +111,11 @@ async function issues(
     let lenths_fail = '';
 
     // Check min length
-    if (!isNaN(issuesMinLen) && issuesTitle.length < issuesMinLen) {
+    if (
+        !isNaN(issuesMinLen) &&
+        issuesTitle.length < issuesMinLen &&
+        !no_limit
+    ) {
         core.error(
             `Issues title "${issues_title}" is smaller than min length specified - ${issuesMinLen}`,
         );
@@ -123,7 +128,8 @@ async function issues(
     if (
         !isNaN(issuesMaxLen) &&
         issuesMaxLen > 0 &&
-        issuesTitle.length > issuesMaxLen
+        issuesTitle.length > issuesMaxLen &&
+        !no_limit
     ) {
         core.error(
             `Issues title "${issues_title}" is greater than max length specified - ${issuesMaxLen}`,
@@ -158,7 +164,7 @@ async function issues(
             comment.user?.id === 41898282,
     );
 
-    if (!regexExistsInTitle) {
+    if (!regexExistsInTitle && !no_limit) {
         // add Labels from input
         await client.rest.issues.addLabels({
             owner: issue.owner,
