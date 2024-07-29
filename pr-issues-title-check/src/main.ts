@@ -85,7 +85,9 @@ async function issues(
     core.info(`${author}`);
 
     const inputComment =
-        issuesComment === '' ? `Hi {author}! {DEFAULT_COMMENT}` : issuesComment;
+        issuesComment === ''
+            ? `Hi ${author}! ${DEFAULT_COMMENT}`
+            : issuesComment;
 
     // Fetch all comments on the issue
     const comments = await client.rest.issues.listComments({
