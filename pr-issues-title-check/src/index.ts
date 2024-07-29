@@ -29,6 +29,18 @@ async function run(): Promise<void> {
             .map((label) => label.trim());
         const issuesComment = core.getInput('issues_comment');
 
+        const actorWithoutRestriction = core.getMultilineInput(
+            'actor_without_restriction',
+        );
+        const actor = github.context.actor;
+
+        actorWithoutRestriction.forEach((a) => {
+            if (a === actor) {
+                core.info(`${actor} has no limitation`);
+                return;
+            }
+        });
+
         core.info(`minLen: ${issuesMinLen}`);
         core.info(`maxLen: ${issuesMaxLen}`);
         core.info(`labels: ${issuesLabels}`);
@@ -43,6 +55,7 @@ async function run(): Promise<void> {
         if (eventName === GITHUB_ISSUES) {
             await issues(
                 client,
+                actor,
                 issuesTitlePattern,
                 issuesPatternFlags,
                 issuesLabels,
@@ -67,6 +80,7 @@ async function run(): Promise<void> {
 
 async function issues(
     client: InstanceType<typeof GitHub>,
+    actor: string,
     issuesTitlePattern: string,
     issuesPatternFlags: string,
     issuesLabels: string[],
@@ -93,11 +107,11 @@ async function issues(
     // Check min length
     if (!isNaN(issuesMinLen) && issuesTitle.length < issuesMinLen) {
         core.error(
-            `Issues title "${issuesTitle}" is smaller than min length specified - ${issuesMinLen}`,
+            `Issues title "${issues_title}" is smaller than min length specified - ${issuesMinLen}`,
         );
         lenths_fail += `
 
-        Issues title "${issuesTitle}" is smaller than min length specified - ${issuesMinLen}`;
+        Issues title "${issues_title}" is smaller than min length specified - ${issuesMinLen}`;
     }
 
     // Check max length
@@ -107,11 +121,11 @@ async function issues(
         issuesTitle.length > issuesMaxLen
     ) {
         core.error(
-            `Issues title "${issuesTitle}" is greater than max length specified - ${issuesMaxLen}`,
+            `Issues title "${issues_title}" is greater than max length specified - ${issuesMaxLen}`,
         );
         lenths_fail += `
 
-        Issues title "${issuesTitle}" is greater than max length specified - ${issuesMaxLen}`;
+        Issues title "${issues_title}" is greater than max length specified - ${issuesMaxLen}`;
     }
 
     issuesTitle = issues_title;
@@ -121,10 +135,9 @@ async function issues(
     const regex = new RegExp(regexPattern, regexFlags);
     const regexExistsInTitle = regex.test(issuesTitle);
 
-    const author = github.context.actor;
     const inputComment =
         issuesComment === ''
-            ? `Hi @${author}! ${DEFAULT_COMMENT}`
+            ? `Hi @${actor}! ${DEFAULT_COMMENT}`
             : issuesComment;
 
     // Fetch all comments on the issue
