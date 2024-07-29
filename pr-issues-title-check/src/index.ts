@@ -47,7 +47,7 @@ async function run(): Promise<void> {
             eventName !== GITHUB_PULL_REQUEST_EVENT &&
             eventName !== GITHUB_PULL_REQUEST_TARGET_EVENT
         ) {
-            pull_request();
+            await pull_request();
         } else {
             core.setFailed(`Invalid event: ${eventName}`);
             return;
@@ -154,8 +154,8 @@ async function issues(
     core.setOutput('valid', 'true');
 }
 
-function pull_request() {
-    return;
+async function pull_request(): Promise<void> {
+    core.info('Pull request logic is not implemented.');
     // try {
     //     const { eventName } = github.context;
     //     core.info(`Event name: ${eventName}`);
