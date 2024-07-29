@@ -88,12 +88,16 @@ async function issues(
         }
     });
 
+    let lenths_fail = '';
+
     // Check min length
     if (!isNaN(issuesMinLen) && issuesTitle.length < issuesMinLen) {
         core.error(
             `Issues title "${issuesTitle}" is smaller than min length specified - ${issuesMinLen}`,
         );
-        return;
+        lenths_fail += `
+
+        Issues title "${issuesTitle}" is smaller than min length specified - ${issuesMinLen}`;
     }
 
     // Check max length
@@ -105,7 +109,9 @@ async function issues(
         core.error(
             `Issues title "${issuesTitle}" is greater than max length specified - ${issuesMaxLen}`,
         );
-        return;
+        lenths_fail += `
+
+        Issues title "${issuesTitle}" is greater than max length specified - ${issuesMaxLen}`;
     }
 
     issuesTitle = issues_title;
@@ -130,7 +136,8 @@ async function issues(
 
     const existingComment = comments.data.find(
         (comment) =>
-            comment.body === inputComment && comment.user?.id === 41898282,
+            comment.body?.startsWith(inputComment) &&
+            comment.user?.id === 41898282,
     );
 
     if (!regexExistsInTitle) {
@@ -148,7 +155,7 @@ async function issues(
                 owner: issue.owner,
                 repo: issue.repo,
                 issue_number: issue.number,
-                body: inputComment,
+                body: inputComment + lenths_fail,
             });
             core.info(`Create comment`);
             return;
