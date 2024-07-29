@@ -23,10 +23,10 @@ async function run(): Promise<void> {
             core.getInput('issues_pattern_flags') || DEFAULT_FLAGS;
         const issuesMinLen = parseInt(core.getInput('issues_min_length'));
         const issuesMaxLen = parseInt(core.getInput('issues_max_length'));
-        const issuesLabels = core
-            .getInput('issues_labels')
-            .split(',')
-            .map((label) => label.trim());
+        const issuesLabelsInput = core.getInput('issues_labels');
+        const issuesLabels = issuesLabelsInput
+            ? issuesLabelsInput.split(',').map((label) => label.trim())
+            : [];
         const issuesComment = core.getInput('issues_comment');
 
         const actorWithoutRestriction = core.getMultilineInput(
