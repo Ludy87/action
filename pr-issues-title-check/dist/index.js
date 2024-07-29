@@ -29242,6 +29242,7 @@ function run() {
             const token = core.getInput('token', { required: true });
             const client = github.getOctokit(token);
             const issuesTitlePattern = core.getInput('issues_pattern') || DEFAULT_PATTERN;
+            const issues_prefix = core.getMultilineInput('issues_prefix');
             const issuesPatternFlags = core.getInput('issues_pattern_flags') || DEFAULT_FLAGS;
             const issuesMinLen = parseInt(core.getInput('issues_min_length'));
             const issuesMaxLen = parseInt(core.getInput('issues_max_length'));
@@ -29253,14 +29254,13 @@ function run() {
             core.info(`minLen: ${issuesMinLen}`);
             core.info(`maxLen: ${issuesMaxLen}`);
             core.info(`labels: ${issuesLabels}`);
-            const issues_prefix = core.getMultilineInput('issues_prefix');
             issues_prefix.forEach((prefix) => {
                 core.info(prefix.trim());
             });
             const { eventName } = github.context;
             core.notice(`Event name: ${eventName}`);
             if (eventName === GITHUB_ISSUES) {
-                yield issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, issuesComment, issuesMinLen, issuesMaxLen);
+                yield issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, issuesComment, issuesMinLen, issuesMaxLen, issues_prefix);
             }
             else if (eventName !== GITHUB_PULL_REQUEST_EVENT &&
                 eventName !== GITHUB_PULL_REQUEST_TARGET_EVENT) {
@@ -29276,13 +29276,18 @@ function run() {
         }
     });
 }
-function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, issuesComment, issuesMinLen, issuesMaxLen) {
+function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, issuesComment, issuesMinLen, issuesMaxLen, issues_prefix) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
         // Get client and context
         const issue = github.context.issue;
         const issuesTitle = (_a = github.context.payload.issue) === null || _a === void 0 ? void 0 : _a.title;
         core.info(`Issues title: ${issuesTitle}`);
+        issues_prefix.forEach((title) => {
+            if (issuesTitle.includes(title)) {
+                core.info(issuesTitle.replace(title, '').trim());
+            }
+        });
         // Check min length
         if (!isNaN(issuesMinLen) && issuesTitle.length < issuesMinLen) {
             core.setFailed(`Issues title "${issuesTitle}" is smaller than min length specified - ${issuesMinLen}`);
