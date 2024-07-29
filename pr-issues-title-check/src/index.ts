@@ -79,6 +79,7 @@ async function issues(
     const issue: { owner: string; repo: string; number: number } =
         github.context.issue;
     let issuesTitle: string = github.context.payload.issue?.title;
+    const issues_title: string = issuesTitle;
     core.info(`Issues title: ${issuesTitle}`);
 
     issues_prefix.forEach((title) => {
@@ -106,6 +107,8 @@ async function issues(
         );
         return;
     }
+
+    issuesTitle = issues_title;
 
     const regexFlags = issuesPatternFlags;
     const regexPattern = issuesTitlePattern;
