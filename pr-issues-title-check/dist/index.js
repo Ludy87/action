@@ -1,4 +1,4 @@
-/******/ (() => { // webpackBootstrap
+require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
 /***/ 7351:
@@ -29282,6 +29282,7 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, is
         // Get client and context
         const issue = github.context.issue;
         let issuesTitle = (_a = github.context.payload.issue) === null || _a === void 0 ? void 0 : _a.title;
+        const issues_title = issuesTitle;
         core.info(`Issues title: ${issuesTitle}`);
         issues_prefix.forEach((title) => {
             if (issuesTitle.includes(title)) {
@@ -29300,6 +29301,7 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, is
             core.setFailed(`Issues title "${issuesTitle}" is greater than max length specified - ${issuesMaxLen}`);
             return;
         }
+        issuesTitle = issues_title;
         const regexFlags = issuesPatternFlags;
         const regexPattern = issuesTitlePattern;
         const regex = new RegExp(regexPattern, regexFlags);
@@ -31326,3 +31328,4 @@ module.exports = parseParams
 /******/ 	
 /******/ })()
 ;
+//# sourceMappingURL=index.js.map
