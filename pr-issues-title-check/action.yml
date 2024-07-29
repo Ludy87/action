@@ -17,7 +17,7 @@ inputs:
     required: false
     default: '-1'
   issues_labels:
-    default: Title invalid, bad, Stale
+    default: Title invalid, Stale
   issues_comment:
     required: false
   token:
