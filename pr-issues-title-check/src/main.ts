@@ -4,6 +4,7 @@ import { GitHub } from '@actions/github/lib/utils';
 
 const DEFAULT_FLAGS = 'gmi';
 const DEFAULT_PATTERN = '^.*$';
+const DEFAULT_COMMENT = 'Der Titel ist unzureichend!';
 
 const GITHUB_PULL_REQUEST_EVENT = 'pull_request';
 const GITHUB_PULL_REQUEST_TARGET_EVENT = 'pull_request_target';
@@ -80,6 +81,8 @@ async function issues(
     const regex = new RegExp(regexPattern, regexFlags);
     const regexExistsInTitle = regex.test(issuesTitle);
 
+    const inputComment = issuesComment === '' ? DEFAULT_COMMENT : issuesComment;
+
     const author = github.context.actor;
     core.info(`${author}`);
 
@@ -102,14 +105,14 @@ async function issues(
         // Find and create the specific comment
         for (const comment of comments.data) {
             if (
-                comment.body !== `Hi @${author}! ${issuesComment}` ||
+                comment.body !== `${inputComment}` ||
                 comment.user?.id !== 41898282
             ) {
                 await client.rest.issues.createComment({
                     owner: issue.owner,
                     repo: issue.repo,
                     issue_number: issue.number,
-                    body: `Hi @${author}! ${issuesComment}`,
+                    body: `${inputComment}`,
                 });
                 core.info(`Create comment: ${comment.id}`);
                 return;
@@ -147,7 +150,7 @@ async function issues(
             const comment_user_id = comment.user?.id;
 
             if (
-                comment.body === `Hi @${author}! ${issuesComment}` &&
+                comment.body === `${inputComment}` &&
                 comment.user?.id === 41898282
             ) {
                 await client.rest.issues.deleteComment({
