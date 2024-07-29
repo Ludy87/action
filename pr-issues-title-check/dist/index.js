@@ -1,4 +1,4 @@
-require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
+/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
 /***/ 7351:
@@ -29256,7 +29256,7 @@ function run() {
             const { eventName } = github.context;
             core.notice(`Event name: ${eventName}`);
             if (eventName === GITHUB_ISSUES) {
-                yield issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, issuesComment);
+                yield issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, issuesComment, issuesMinLen, issuesMaxLen);
             }
             else if (eventName !== GITHUB_PULL_REQUEST_EVENT &&
                 eventName !== GITHUB_PULL_REQUEST_TARGET_EVENT) {
@@ -29272,13 +29272,23 @@ function run() {
         }
     });
 }
-function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, issuesComment) {
+function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, issuesComment, issuesMinLen, issuesMaxLen) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
         // Get client and context
         const issue = github.context.issue;
         const issuesTitle = (_a = github.context.payload.issue) === null || _a === void 0 ? void 0 : _a.title;
         core.info(`Issues title: ${issuesTitle}`);
+        // Check min length
+        if (issuesTitle.length < issuesMinLen) {
+            core.setFailed(`Issues title "${issuesTitle}" is smaller than min length specified - ${issuesMinLen}`);
+            return;
+        }
+        // Check max length
+        if (issuesMaxLen > 0 && issuesTitle.length > issuesMaxLen) {
+            core.setFailed(`Issues title "${issuesTitle}" is greater than max length specified - ${issuesMaxLen}`);
+            return;
+        }
         const regexFlags = issuesPatternFlags;
         const regexPattern = issuesTitlePattern;
         const regex = new RegExp(regexPattern, regexFlags);
@@ -31305,4 +31315,3 @@ module.exports = parseParams
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=index.js.map
