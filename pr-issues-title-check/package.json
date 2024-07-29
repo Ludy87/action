@@ -1,18 +1,21 @@
 {
   "name": "pr-issues-title-verify",
   "version": "1.0.0",
+  "private": true,
   "description": "PR & Issues title check GitHub action",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc && ncc build lib/index.js",
+    "build": "ncc build ./src/index.ts --out dist --source-map",
+    "package": "ncc build ./src/index.ts --out dist --license licenses.txt",
     "lint": "eslint --fix src/**/*.ts",
+    "lint:tsc": "tsc",
     "lint:fix": "prettier --write '**/*.ts'",
-    "package": "ncc build --license licenses.txt",
+    "test": "tsc --noEmit",
     "all": "npm run build && npm run lint && npm run package"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Ludy87/action/pr-title-check"
+    "url": "git+https://github.com/Ludy87/action/pr-issues-title-check"
   },
   "keywords": [
     "actions",
