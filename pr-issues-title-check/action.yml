@@ -3,30 +3,41 @@ description: 'Check PR and Issues title against a regex'
 author: 'Ludy87'
 inputs:
   issues_pattern:
+    description: 'Regex pattern to match against the title'
     required: false
-    description: 'regex pattern to match against'
+    default: '^.*$'
   issues_pattern_flags:
+    description: 'Flags for the regex input'
     required: false
-    description: 'flags for the regex input'
+    default: 'gmi'
   issues_min_length:
-    description: 'Min length of title'
+    description: 'Minimum length of the title'
     required: false
     default: '1'
   issues_max_length:
-    description: 'Max length of title. -1 to ignore the rule'
+    description: 'Maximum length of the title. Set to -1 to ignore this rule'
     required: false
     default: '-1'
   issues_labels:
-    default: Title invalid, Stale
-  issues_comment:
+    description: 'Comma-separated list of labels to add if the title does not match the pattern'
     required: false
+    default: 'Title invalid, Stale'
+  issues_comment:
+    description: 'Comment to add if the title does not match the pattern'
+    required: false
+    default: 'The title is insufficient!'
   token:
-    default: ${{ github.token }}
+    description: 'Token for the repository. Can be passed in using `${{ secrets.GITHUB_TOKEN }}`.'
     required: true
-    description: 'Token for the repository. Can be passed in using `{{ secrets.GITHUB_TOKEN }}`.'
+    default: ${{ github.token }}
+outputs:
+  valid:
+    description: 'Boolean indicating if the title is valid'
+
 runs:
   using: 'node20'
   main: 'dist/index.js'
+
 branding:
   icon: 'check'
   color: 'green'
