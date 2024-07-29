@@ -23,7 +23,8 @@ inputs:
     required: false
   issues_prefix:
     required: false
-    default: '[Bug]'
+  actor_without_restriction:
+    required: false
   token:
     description: 'Token for the repository. Can be passed in using GITHUB_TOKEN.'
     required: true
