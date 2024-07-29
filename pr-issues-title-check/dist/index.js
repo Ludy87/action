@@ -1,4 +1,4 @@
-/******/ (() => { // webpackBootstrap
+require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
 /***/ 7351:
@@ -29260,7 +29260,7 @@ function run() {
             }
             else if (eventName !== GITHUB_PULL_REQUEST_EVENT &&
                 eventName !== GITHUB_PULL_REQUEST_TARGET_EVENT) {
-                pull_request();
+                yield pull_request();
             }
             else {
                 core.setFailed(`Invalid event: ${eventName}`);
@@ -29356,51 +29356,53 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, is
     });
 }
 function pull_request() {
-    return;
-    // try {
-    //     const { eventName } = github.context;
-    //     core.info(`Event name: ${eventName}`);
-    //     if (
-    //         eventName !== GITHUB_PULL_REQUEST_EVENT &&
-    //         eventName !== GITHUB_PULL_REQUEST_TARGET_EVENT
-    //     ) {
-    //         core.setFailed(`Invalid event: ${eventName}`);
-    //         return;
-    //     }
-    //     const pullRequestTitle: string | undefined =
-    //         github.context.payload.pull_request?.title;
-    //     core.info(`PR title: ${pullRequestTitle}`);
-    //     if (!pullRequestTitle) {
-    //         core.setFailed('Pull Request title not defined');
-    //         return;
-    //     }
-    //     const inputPattern = core.getInput('pattern');
-    //     const inputFlags = core.getInput('flags');
-    //     if (inputFlags === '') {
-    //         core.info('No input flags present. Will fallback to default');
-    //     }
-    //     if (inputPattern === '') {
-    //         core.info('No input pattern present. Will fallback to default');
-    //     }
-    //     const regexPattern =
-    //         inputPattern === '' ? DEFAULT_PATTERN : inputPattern;
-    //     const regexFlags = inputFlags === '' ? DEFAULT_FLAGS : inputFlags;
-    //     core.info(`Pattern: ${regexPattern}`);
-    //     core.info(`Flags: ${regexFlags}`);
-    //     const regex = new RegExp(regexPattern, regexFlags);
-    //     const regexExistsInTitle = regex.test(pullRequestTitle);
-    //     if (!regexExistsInTitle) {
-    //         core.setFailed('PR title does not contain the regex pattern');
-    //         return;
-    //     }
-    //     core.info('Pattern exists in PR title');
-    // } catch (error) {
-    //     if (error instanceof Error) {
-    //         core.setFailed(error.message);
-    //     } else {
-    //         core.setFailed('unknown error');
-    //     }
-    // }
+    return __awaiter(this, void 0, void 0, function* () {
+        core.info('Pull request logic is not implemented.');
+        // try {
+        //     const { eventName } = github.context;
+        //     core.info(`Event name: ${eventName}`);
+        //     if (
+        //         eventName !== GITHUB_PULL_REQUEST_EVENT &&
+        //         eventName !== GITHUB_PULL_REQUEST_TARGET_EVENT
+        //     ) {
+        //         core.setFailed(`Invalid event: ${eventName}`);
+        //         return;
+        //     }
+        //     const pullRequestTitle: string | undefined =
+        //         github.context.payload.pull_request?.title;
+        //     core.info(`PR title: ${pullRequestTitle}`);
+        //     if (!pullRequestTitle) {
+        //         core.setFailed('Pull Request title not defined');
+        //         return;
+        //     }
+        //     const inputPattern = core.getInput('pattern');
+        //     const inputFlags = core.getInput('flags');
+        //     if (inputFlags === '') {
+        //         core.info('No input flags present. Will fallback to default');
+        //     }
+        //     if (inputPattern === '') {
+        //         core.info('No input pattern present. Will fallback to default');
+        //     }
+        //     const regexPattern =
+        //         inputPattern === '' ? DEFAULT_PATTERN : inputPattern;
+        //     const regexFlags = inputFlags === '' ? DEFAULT_FLAGS : inputFlags;
+        //     core.info(`Pattern: ${regexPattern}`);
+        //     core.info(`Flags: ${regexFlags}`);
+        //     const regex = new RegExp(regexPattern, regexFlags);
+        //     const regexExistsInTitle = regex.test(pullRequestTitle);
+        //     if (!regexExistsInTitle) {
+        //         core.setFailed('PR title does not contain the regex pattern');
+        //         return;
+        //     }
+        //     core.info('Pattern exists in PR title');
+        // } catch (error) {
+        //     if (error instanceof Error) {
+        //         core.setFailed(error.message);
+        //     } else {
+        //         core.setFailed('unknown error');
+        //     }
+        // }
+    });
 }
 run().catch((error) => core.setFailed(error.message)); // Catch unhandled errors
 
@@ -31303,3 +31305,4 @@ module.exports = parseParams
 /******/ 	
 /******/ })()
 ;
+//# sourceMappingURL=index.js.map
