@@ -9,9 +9,6 @@ const GITHUB_PULL_REQUEST_EVENT = 'pull_request';
 const GITHUB_PULL_REQUEST_TARGET_EVENT = 'pull_request_target';
 
 const GITHUB_ISSUES = 'issues';
-// const GITHUB_ISSUES_OPENED = 'opened';
-// const GITHUB_ISSUES_REOPENED = 'reopened';
-// const GITHUB_ISSUES_EDITED = 'edited';
 
 async function run() {
     try {
@@ -35,7 +32,7 @@ async function run() {
         core.info(`labels: ${issuesLabels}`);
 
         const { eventName } = github.context;
-        core.info(`Event name: ${eventName}`);
+        core.notice(`Event name: ${eventName}`);
 
         if (eventName === GITHUB_ISSUES) {
             await issues(
@@ -94,12 +91,14 @@ async function issues(
     });
 
     if (!regexExistsInTitle) {
+        // add Labels from input
         await client.rest.issues.addLabels({
             owner: issue.owner,
             repo: issue.repo,
             issue_number: issue.number,
             labels: issuesLabels,
         });
+
         // Find and create the specific comment
         for (const comment of comments.data) {
             if (
@@ -113,21 +112,23 @@ async function issues(
                     body: `Hi @${author}! ${issuesComment}`,
                 });
                 core.info(`Create comment: ${comment.id}`);
+                return;
             } else {
                 core.info('Comment found');
             }
         }
         return;
     } else {
+        // find all Labels from Issues
         const labels = await client.rest.issues.listLabelsOnIssue({
             owner: issue.owner,
             repo: issue.repo,
             issue_number: issue.number,
         });
-        const labelNames = labels.data.map((label) => label.name.trim());
-        core.info(`Labels on issue: ${labelNames.join(', ')}`);
 
         // Remove only labels from issuesLabels
+        const labelNames = labels.data.map((label) => label.name.trim());
+        core.info(`Labels on issue: ${labelNames.join(', ')}`);
         for (const label of issuesLabels) {
             if (labelNames.includes(label)) {
                 await client.rest.issues.removeLabel({
