@@ -25,15 +25,12 @@ inputs:
   issues_comment:
     description: 'Comment to add if the title does not match the pattern'
     required: false
+  issues_prefix:
+    required: false
   token:
     description: 'Token for the repository. Can be passed in using GITHUB_TOKEN.'
     required: true
     default: ${{ github.token }}
-  test:
-    default: |
-      test1
-      test2
-      test3
 outputs:
   valid:
     description: 'Boolean indicating if the title is valid'
