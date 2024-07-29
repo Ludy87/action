@@ -29251,6 +29251,14 @@ function run() {
                 .split(',')
                 .map((label) => label.trim());
             const issuesComment = core.getInput('issues_comment');
+            const actorWithoutRestriction = core.getMultilineInput('actor_without_restriction');
+            const actor = github.context.actor;
+            actorWithoutRestriction.forEach((a) => {
+                if (a === actor) {
+                    core.info(`${actor} has no limitation`);
+                    return;
+                }
+            });
             core.info(`minLen: ${issuesMinLen}`);
             core.info(`maxLen: ${issuesMaxLen}`);
             core.info(`labels: ${issuesLabels}`);
@@ -29260,7 +29268,7 @@ function run() {
             const { eventName } = github.context;
             core.notice(`Event name: ${eventName}`);
             if (eventName === GITHUB_ISSUES) {
-                yield issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, issuesComment, issuesMinLen, issuesMaxLen, issues_prefix);
+                yield issues(client, actor, issuesTitlePattern, issuesPatternFlags, issuesLabels, issuesComment, issuesMinLen, issuesMaxLen, issues_prefix);
             }
             else if (eventName !== GITHUB_PULL_REQUEST_EVENT &&
                 eventName !== GITHUB_PULL_REQUEST_TARGET_EVENT) {
@@ -29276,7 +29284,7 @@ function run() {
         }
     });
 }
-function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, issuesComment, issuesMinLen, issuesMaxLen, issues_prefix) {
+function issues(client, actor, issuesTitlePattern, issuesPatternFlags, issuesLabels, issuesComment, issuesMinLen, issuesMaxLen, issues_prefix) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
         // Get client and context
@@ -29292,28 +29300,27 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, is
         let lenths_fail = '';
         // Check min length
         if (!isNaN(issuesMinLen) && issuesTitle.length < issuesMinLen) {
-            core.error(`Issues title "${issuesTitle}" is smaller than min length specified - ${issuesMinLen}`);
+            core.error(`Issues title "${issues_title}" is smaller than min length specified - ${issuesMinLen}`);
             lenths_fail += `
 
-        Issues title "${issuesTitle}" is smaller than min length specified - ${issuesMinLen}`;
+        Issues title "${issues_title}" is smaller than min length specified - ${issuesMinLen}`;
         }
         // Check max length
         if (!isNaN(issuesMaxLen) &&
             issuesMaxLen > 0 &&
             issuesTitle.length > issuesMaxLen) {
-            core.error(`Issues title "${issuesTitle}" is greater than max length specified - ${issuesMaxLen}`);
+            core.error(`Issues title "${issues_title}" is greater than max length specified - ${issuesMaxLen}`);
             lenths_fail += `
 
-        Issues title "${issuesTitle}" is greater than max length specified - ${issuesMaxLen}`;
+        Issues title "${issues_title}" is greater than max length specified - ${issuesMaxLen}`;
         }
         issuesTitle = issues_title;
         const regexFlags = issuesPatternFlags;
         const regexPattern = issuesTitlePattern;
         const regex = new RegExp(regexPattern, regexFlags);
         const regexExistsInTitle = regex.test(issuesTitle);
-        const author = github.context.actor;
         const inputComment = issuesComment === ''
-            ? `Hi @${author}! ${DEFAULT_COMMENT}`
+            ? `Hi @${actor}! ${DEFAULT_COMMENT}`
             : issuesComment;
         // Fetch all comments on the issue
         const comments = yield client.rest.issues.listComments({
