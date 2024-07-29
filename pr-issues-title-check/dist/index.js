@@ -1,4 +1,4 @@
-/******/ (() => { // webpackBootstrap
+require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
 /***/ 7351:
@@ -29289,17 +29289,22 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, is
                 issuesTitle = issuesTitle.replace(title, '').trim();
             }
         });
+        let lenths_fail = '';
         // Check min length
         if (!isNaN(issuesMinLen) && issuesTitle.length < issuesMinLen) {
             core.error(`Issues title "${issuesTitle}" is smaller than min length specified - ${issuesMinLen}`);
-            return;
+            lenths_fail += `
+
+        Issues title "${issuesTitle}" is smaller than min length specified - ${issuesMinLen}`;
         }
         // Check max length
         if (!isNaN(issuesMaxLen) &&
             issuesMaxLen > 0 &&
             issuesTitle.length > issuesMaxLen) {
             core.error(`Issues title "${issuesTitle}" is greater than max length specified - ${issuesMaxLen}`);
-            return;
+            lenths_fail += `
+
+        Issues title "${issuesTitle}" is greater than max length specified - ${issuesMaxLen}`;
         }
         issuesTitle = issues_title;
         const regexFlags = issuesPatternFlags;
@@ -29316,7 +29321,11 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, is
             repo: issue.repo,
             issue_number: issue.number,
         });
-        const existingComment = comments.data.find((comment) => { var _a; return comment.body === inputComment && ((_a = comment.user) === null || _a === void 0 ? void 0 : _a.id) === 41898282; });
+        const existingComment = comments.data.find((comment) => {
+            var _a, _b;
+            return ((_a = comment.body) === null || _a === void 0 ? void 0 : _a.startsWith(inputComment)) &&
+                ((_b = comment.user) === null || _b === void 0 ? void 0 : _b.id) === 41898282;
+        });
         if (!regexExistsInTitle) {
             // add Labels from input
             yield client.rest.issues.addLabels({
@@ -29331,7 +29340,7 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, is
                     owner: issue.owner,
                     repo: issue.repo,
                     issue_number: issue.number,
-                    body: inputComment,
+                    body: inputComment + lenths_fail,
                 });
                 core.info(`Create comment`);
                 return;
@@ -31328,3 +31337,4 @@ module.exports = parseParams
 /******/ 	
 /******/ })()
 ;
+//# sourceMappingURL=index.js.map
