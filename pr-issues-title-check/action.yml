@@ -13,11 +13,11 @@ inputs:
   issues_min_length:
     description: 'Minimum length of the title'
     required: false
-    default: '1'
+    # default: '1'
   issues_max_length:
     description: 'Maximum length of the title. Set to -1 to ignore this rule'
     required: false
-    default: '-1'
+    # default: '-1'
   issues_labels:
     description: 'Comma-separated list of labels to add if the title does not match the pattern'
     required: false
