@@ -43,6 +43,7 @@ const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
 const DEFAULT_FLAGS = 'gmi';
 const DEFAULT_PATTERN = '^.*$';
+const DEFAULT_COMMENT = "Der Titel ist unzureichend!";
 const GITHUB_PULL_REQUEST_EVENT = 'pull_request';
 const GITHUB_PULL_REQUEST_TARGET_EVENT = 'pull_request_target';
 const GITHUB_ISSUES = 'issues';
@@ -99,6 +100,7 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, is
         const regexPattern = issuesTitlePattern === '' ? DEFAULT_PATTERN : issuesTitlePattern;
         const regex = new RegExp(regexPattern, regexFlags);
         const regexExistsInTitle = regex.test(issuesTitle);
+        const inputComment = issuesComment === '' ? DEFAULT_COMMENT : issuesComment;
         const author = github.context.actor;
         core.info(`${author}`);
         // Fetch all comments on the issue
@@ -117,13 +119,13 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, is
             });
             // Find and create the specific comment
             for (const comment of comments.data) {
-                if (comment.body !== `Hi @${author}! ${issuesComment}` ||
+                if (comment.body !== `${inputComment}` ||
                     ((_b = comment.user) === null || _b === void 0 ? void 0 : _b.id) !== 41898282) {
                     yield client.rest.issues.createComment({
                         owner: issue.owner,
                         repo: issue.repo,
                         issue_number: issue.number,
-                        body: `Hi @${author}! ${issuesComment}`,
+                        body: `${inputComment}`,
                     });
                     core.info(`Create comment: ${comment.id}`);
                     return;
@@ -159,7 +161,7 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, is
             for (const comment of comments.data) {
                 const comment_user_name = (_c = comment.user) === null || _c === void 0 ? void 0 : _c.name;
                 const comment_user_id = (_d = comment.user) === null || _d === void 0 ? void 0 : _d.id;
-                if (comment.body === `Hi @${author}! ${issuesComment}` &&
+                if (comment.body === `${inputComment}` &&
                     ((_e = comment.user) === null || _e === void 0 ? void 0 : _e.id) === 41898282) {
                     yield client.rest.issues.deleteComment({
                         owner: issue.owner,
