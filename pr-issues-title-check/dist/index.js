@@ -29264,7 +29264,7 @@ function run() {
             });
             core.info(`minLen: ${issuesMinLen}`);
             core.info(`maxLen: ${issuesMaxLen}`);
-            core.info(`labels: ${issuesLabels}`);
+            core.info(`labels: ${issuesLabels} - ${issuesLabels.length}`);
             core.info(`actor: ${actor}`);
             issues_prefix.forEach((prefix) => {
                 core.info(prefix.trim());
