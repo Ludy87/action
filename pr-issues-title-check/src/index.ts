@@ -42,6 +42,8 @@ async function run(): Promise<void> {
                 issuesPatternFlags,
                 issuesLabels,
                 issuesComment,
+                issuesMinLen,
+                issuesMaxLen,
             );
         } else if (
             eventName !== GITHUB_PULL_REQUEST_EVENT &&
@@ -63,12 +65,30 @@ async function issues(
     issuesPatternFlags: string,
     issuesLabels: string[],
     issuesComment: string,
+    issuesMinLen: number,
+    issuesMaxLen: number,
 ): Promise<void> {
     // Get client and context
     const issue: { owner: string; repo: string; number: number } =
         github.context.issue;
     const issuesTitle: string = github.context.payload.issue?.title;
     core.info(`Issues title: ${issuesTitle}`);
+
+    // Check min length
+    if (issuesTitle.length < issuesMinLen) {
+        core.setFailed(
+            `Issues title "${issuesTitle}" is smaller than min length specified - ${issuesMinLen}`,
+        );
+        return;
+    }
+
+    // Check max length
+    if (issuesMaxLen > 0 && issuesTitle.length > issuesMaxLen) {
+        core.setFailed(
+            `Issues title "${issuesTitle}" is greater than max length specified - ${issuesMaxLen}`,
+        );
+        return;
+    }
 
     const regexFlags = issuesPatternFlags;
     const regexPattern = issuesTitlePattern;
