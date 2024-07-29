@@ -1,4 +1,4 @@
-require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
+/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
 /***/ 7351:
@@ -29234,6 +29234,7 @@ const DEFAULT_COMMENT = 'The title is insufficient!';
 const GITHUB_PULL_REQUEST_EVENT = 'pull_request';
 const GITHUB_PULL_REQUEST_TARGET_EVENT = 'pull_request_target';
 const GITHUB_ISSUES = 'issues';
+let no_limit = false;
 function run() {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
@@ -29257,10 +29258,11 @@ function run() {
             actorWithoutRestriction.forEach((a) => {
                 if (a === actor) {
                     core.info(`${actor} has no limitation`);
-                    process.exit(1); // Use process.exit instead of exit
-                    return;
+                    no_limit = true;
                 }
-                core.info(a);
+                else {
+                    core.info(a);
+                }
             });
             core.info(`minLen: ${issuesMinLen}`);
             core.info(`maxLen: ${issuesMaxLen}`);
@@ -29302,7 +29304,9 @@ function issues(client, actor, issuesTitlePattern, issuesPatternFlags, issuesLab
         });
         let lenths_fail = '';
         // Check min length
-        if (!isNaN(issuesMinLen) && issuesTitle.length < issuesMinLen) {
+        if (!isNaN(issuesMinLen) &&
+            issuesTitle.length < issuesMinLen &&
+            !no_limit) {
             core.error(`Issues title "${issues_title}" is smaller than min length specified - ${issuesMinLen}`);
             lenths_fail += `
 
@@ -29311,7 +29315,8 @@ function issues(client, actor, issuesTitlePattern, issuesPatternFlags, issuesLab
         // Check max length
         if (!isNaN(issuesMaxLen) &&
             issuesMaxLen > 0 &&
-            issuesTitle.length > issuesMaxLen) {
+            issuesTitle.length > issuesMaxLen &&
+            !no_limit) {
             core.error(`Issues title "${issues_title}" is greater than max length specified - ${issuesMaxLen}`);
             lenths_fail += `
 
@@ -29336,7 +29341,7 @@ function issues(client, actor, issuesTitlePattern, issuesPatternFlags, issuesLab
             return ((_a = comment.body) === null || _a === void 0 ? void 0 : _a.startsWith(inputComment)) &&
                 ((_b = comment.user) === null || _b === void 0 ? void 0 : _b.id) === 41898282;
         });
-        if (!regexExistsInTitle) {
+        if (!regexExistsInTitle && !no_limit) {
             // add Labels from input
             yield client.rest.issues.addLabels({
                 owner: issue.owner,
@@ -31347,4 +31352,3 @@ module.exports = parseParams
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=index.js.map
