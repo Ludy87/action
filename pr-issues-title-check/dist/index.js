@@ -29267,12 +29267,12 @@ function run() {
                 yield pull_request();
             }
             else {
-                core.setFailed(`Invalid event: ${eventName}`);
+                core.error(`Invalid event: ${eventName}`);
                 return;
             }
         }
         catch (error) {
-            core.setFailed((_a = error === null || error === void 0 ? void 0 : error.message) !== null && _a !== void 0 ? _a : 'Unknown error');
+            core.error((_a = error === null || error === void 0 ? void 0 : error.message) !== null && _a !== void 0 ? _a : 'Unknown error');
         }
     });
 }
@@ -29291,14 +29291,14 @@ function issues(client, issuesTitlePattern, issuesPatternFlags, issuesLabels, is
         });
         // Check min length
         if (!isNaN(issuesMinLen) && issuesTitle.length < issuesMinLen) {
-            core.setFailed(`Issues title "${issuesTitle}" is smaller than min length specified - ${issuesMinLen}`);
+            core.error(`Issues title "${issuesTitle}" is smaller than min length specified - ${issuesMinLen}`);
             return;
         }
         // Check max length
         if (!isNaN(issuesMaxLen) &&
             issuesMaxLen > 0 &&
             issuesTitle.length > issuesMaxLen) {
-            core.setFailed(`Issues title "${issuesTitle}" is greater than max length specified - ${issuesMaxLen}`);
+            core.error(`Issues title "${issuesTitle}" is greater than max length specified - ${issuesMaxLen}`);
             return;
         }
         issuesTitle = issues_title;
