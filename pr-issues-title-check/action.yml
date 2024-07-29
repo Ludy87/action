@@ -25,7 +25,6 @@ inputs:
   issues_comment:
     description: 'Comment to add if the title does not match the pattern'
     required: false
-    default: 'The title is insufficient!'
   token:
     description: 'Token for the repository. Can be passed in using GITHUB_TOKEN.'
     required: true
