@@ -26,7 +26,8 @@ async function run(): Promise<void> {
             .getInput('issues_labels')
             .split(',')
             .map((label) => label.trim());
-        const issuesComment = core.getInput('issues_comment');
+        const issuesComment =
+            core.getInput('issues_comment') || DEFAULT_COMMENT;
 
         core.info(`minLen: ${issuesMinLen}`);
         core.info(`maxLen: ${issuesMaxLen}`);
@@ -70,16 +71,12 @@ async function issues(
     const issuesTitle: string = github.context.payload.issue?.title;
     core.info(`Issues title: ${issuesTitle}`);
 
-    const regexFlags =
-        issuesPatternFlags === '' ? DEFAULT_FLAGS : issuesPatternFlags;
-    const regexPattern =
-        issuesTitlePattern === '' ? DEFAULT_PATTERN : issuesTitlePattern;
+    const regexFlags = issuesPatternFlags;
+    const regexPattern = issuesTitlePattern;
     const regex = new RegExp(regexPattern, regexFlags);
     const regexExistsInTitle = regex.test(issuesTitle);
 
     const author = github.context.actor;
-    core.info(`${author}`);
-
     const inputComment =
         issuesComment === ''
             ? `Hi @${author}! ${DEFAULT_COMMENT}`
@@ -92,6 +89,11 @@ async function issues(
         issue_number: issue.number,
     });
 
+    const existingComment = comments.data.find(
+        (comment) =>
+            comment.body === inputComment && comment.user?.id === 41898282,
+    );
+
     if (!regexExistsInTitle) {
         // add Labels from input
         await client.rest.issues.addLabels({
@@ -101,23 +103,18 @@ async function issues(
             labels: issuesLabels,
         });
 
-        // Find and create the specific comment
-        for (const comment of comments.data) {
-            if (
-                comment.body !== `${inputComment}` ||
-                comment.user?.id !== 41898282
-            ) {
-                await client.rest.issues.createComment({
-                    owner: issue.owner,
-                    repo: issue.repo,
-                    issue_number: issue.number,
-                    body: `${inputComment}`,
-                });
-                core.info(`Create comment: ${comment.id}`);
-                return;
-            } else {
-                core.info('Comment found');
-            }
+        // Create the specific comment if not exists
+        if (!existingComment) {
+            await client.rest.issues.createComment({
+                owner: issue.owner,
+                repo: issue.repo,
+                issue_number: issue.number,
+                body: inputComment,
+            });
+            core.info(`Create comment`);
+            return;
+        } else {
+            core.info('Comment already exists');
         }
         return;
     } else {
@@ -144,29 +141,18 @@ async function issues(
         }
 
         // Find and delete the specific comment
-        for (const comment of comments.data) {
-            const comment_user_name = comment.user?.name;
-            const comment_user_id = comment.user?.id;
-
-            if (
-                comment.body === `${inputComment}` &&
-                comment.user?.id === 41898282
-            ) {
-                await client.rest.issues.deleteComment({
-                    owner: issue.owner,
-                    repo: issue.repo,
-                    comment_id: comment.id,
-                });
-                core.info(`Removed comment: ${comment.id}`);
-            } else if (comment.user?.id !== 41898282) {
-                core.error(
-                    `${comment_user_name} (${comment_user_id}) is not allowed!`,
-                );
-            } else {
-                core.info("Don't find comment");
-            }
+        if (existingComment) {
+            await client.rest.issues.deleteComment({
+                owner: issue.owner,
+                repo: issue.repo,
+                comment_id: existingComment.id,
+            });
+            core.info(`Removed comment: ${existingComment.id}`);
+        } else {
+            core.info('No matching comment found');
         }
     }
+    core.setOutput('valid', 'true');
 }
 
 function pull_request() {
