@@ -45,7 +45,7 @@ async function run(): Promise<void> {
 
         core.info(`minLen: ${issuesMinLen}`);
         core.info(`maxLen: ${issuesMaxLen}`);
-        core.info(`labels: ${issuesLabels}`);
+        core.info(`labels: ${issuesLabels} - ${issuesLabels.length}`);
         core.info(`actor: ${actor}`);
 
         issues_prefix.forEach((prefix) => {
