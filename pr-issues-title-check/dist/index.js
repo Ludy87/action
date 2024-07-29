@@ -29257,6 +29257,7 @@ function run() {
             actorWithoutRestriction.forEach((a) => {
                 if (a === actor) {
                     core.info(`${actor} has no limitation`);
+                    process.exit(1); // Use process.exit instead of exit
                     return;
                 }
                 core.info(a);
