@@ -34,11 +34,14 @@ async function run(): Promise<void> {
         );
         const actor = github.context.actor;
 
+        core.info(`${actor} actor`);
+
         actorWithoutRestriction.forEach((a) => {
             if (a === actor) {
                 core.info(`${actor} has no limitation`);
                 return;
             }
+            core.info(a);
         });
 
         core.info(`minLen: ${issuesMinLen}`);
