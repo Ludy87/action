@@ -18,6 +18,7 @@ async function run(): Promise<void> {
         const client = github.getOctokit(token);
         const issuesTitlePattern =
             core.getInput('issues_pattern') || DEFAULT_PATTERN;
+        const issues_prefix = core.getMultilineInput('issues_prefix');
         const issuesPatternFlags =
             core.getInput('issues_pattern_flags') || DEFAULT_FLAGS;
         const issuesMinLen = parseInt(core.getInput('issues_min_length'));
@@ -31,8 +32,6 @@ async function run(): Promise<void> {
         core.info(`minLen: ${issuesMinLen}`);
         core.info(`maxLen: ${issuesMaxLen}`);
         core.info(`labels: ${issuesLabels}`);
-
-        const issues_prefix = core.getMultilineInput('issues_prefix');
 
         issues_prefix.forEach((prefix) => {
             core.info(prefix.trim());
@@ -50,6 +49,7 @@ async function run(): Promise<void> {
                 issuesComment,
                 issuesMinLen,
                 issuesMaxLen,
+                issues_prefix,
             );
         } else if (
             eventName !== GITHUB_PULL_REQUEST_EVENT &&
@@ -73,12 +73,19 @@ async function issues(
     issuesComment: string,
     issuesMinLen: number,
     issuesMaxLen: number,
+    issues_prefix: string[],
 ): Promise<void> {
     // Get client and context
     const issue: { owner: string; repo: string; number: number } =
         github.context.issue;
     const issuesTitle: string = github.context.payload.issue?.title;
     core.info(`Issues title: ${issuesTitle}`);
+
+    issues_prefix.forEach((title) => {
+        if (issuesTitle.includes(title)) {
+            core.info(issuesTitle.replace(title, '').trim());
+        }
+    });
 
     // Check min length
     if (!isNaN(issuesMinLen) && issuesTitle.length < issuesMinLen) {
