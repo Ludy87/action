@@ -1,4 +1,4 @@
-/******/ (() => { // webpackBootstrap
+require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
 /***/ 7351:
@@ -29234,6 +29234,7 @@ const GITHUB_PULL_REQUEST_EVENT = 'pull_request';
 const GITHUB_PULL_REQUEST_TARGET_EVENT = 'pull_request_target';
 const GITHUB_ISSUES = 'issues';
 let no_limit = false;
+let lengths_fail = '';
 function run() {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
@@ -29284,11 +29285,11 @@ function run() {
             }
         }
         catch (error) {
-            core.error((_a = error === null || error === void 0 ? void 0 : error.message) !== null && _a !== void 0 ? _a : 'Unknown error');
+            core.setFailed((_a = error === null || error === void 0 ? void 0 : error.message) !== null && _a !== void 0 ? _a : 'Unknown error');
         }
     });
 }
-function issues(client, actor, issuesTitlePattern, issuesPatternFlags, issuesLabels, issuesComment, issuesMinLen, issuesMaxLen, issues_prefix) {
+function issues(client, actor, issuesTitlePattern = "", issuesPatternFlags, issuesLabels, issuesComment, issuesMinLen, issuesMaxLen, issues_prefix) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
         // Get client and context
@@ -29301,20 +29302,19 @@ function issues(client, actor, issuesTitlePattern, issuesPatternFlags, issuesLab
                 issuesTitle = issuesTitle.replace(title, '').trim();
             }
         });
-        let lengths_fail = '';
         // Check if regex is provided
         const regexFlags = issuesPatternFlags;
         const regexPattern = issuesTitlePattern;
-        const regex = new RegExp(regexPattern, regexFlags);
-        const regexExistsInTitle = regex.test(issuesTitle);
+        const regex = regexPattern ? new RegExp(regexPattern, regexFlags) : null;
+        const regexExistsInTitle = regex ? regex.test(issuesTitle) : false;
         if (!regexPattern && (isNaN(issuesMinLen) || isNaN(issuesMaxLen))) {
-            core.setFailed('issues_pattern or (issues_min_length && issues_min_length) müssen angegeben werden');
+            core.setFailed('issues_pattern or (issues_min_length and issues_max_length) must be specified');
+            return;
         }
-        if (!regexPattern) {
+        if (!regexPattern && !no_limit) {
             // Check min length
             if (!isNaN(issuesMinLen) &&
-                issuesTitle.length < issuesMinLen &&
-                !no_limit) {
+                issuesTitle.length < issuesMinLen) {
                 core.error(`Issues title "${issues_title}" is smaller than min length specified - ${issuesMinLen}`);
                 lengths_fail += `
 
@@ -29323,13 +29323,13 @@ function issues(client, actor, issuesTitlePattern, issuesPatternFlags, issuesLab
             // Check max length
             if (!isNaN(issuesMaxLen) &&
                 issuesMaxLen > 0 &&
-                issuesTitle.length > issuesMaxLen &&
-                !no_limit) {
+                issuesTitle.length > issuesMaxLen) {
                 core.error(`Issues title "${issues_title}" is greater than max length specified - ${issuesMaxLen}`);
                 lengths_fail += `
 
             Issues title "${issues_title}" is greater than max length specified - ${issuesMaxLen}`;
             }
+            core.info("kein Pattern angegeben!");
         }
         const inputComment = issuesComment === ''
             ? `Hi @${actor}! ${DEFAULT_COMMENT}`
@@ -29345,9 +29345,7 @@ function issues(client, actor, issuesTitlePattern, issuesPatternFlags, issuesLab
             return ((_a = comment.body) === null || _a === void 0 ? void 0 : _a.startsWith(inputComment)) &&
                 ((_b = comment.user) === null || _b === void 0 ? void 0 : _b.id) === 41898282;
         });
-        if ((!regexExistsInTitle || lengths_fail) &&
-            !no_limit &&
-            (isNaN(issuesMaxLen) || isNaN(issuesMinLen))) {
+        if ((!regexPattern && lengths_fail) || (!regexExistsInTitle && !no_limit)) {
             // add Labels from input
             if (issuesLabels.length > 0) {
                 yield client.rest.issues.addLabels({
@@ -31360,3 +31358,4 @@ module.exports = parseParams
 /******/ 	
 /******/ })()
 ;
+//# sourceMappingURL=index.js.map
