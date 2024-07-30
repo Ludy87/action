@@ -21,6 +21,4 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@main
-            - run: |
-                cd pr-issues-title-check
-            - uses: ./
+            - uses: ./pr-issues-title-check/
