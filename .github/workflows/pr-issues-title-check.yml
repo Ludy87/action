@@ -10,8 +10,10 @@ jobs:
         steps:
             - uses: actions/checkout@main
             - run: |
+                cd pr-issues-title-check
                 npm ci
             - run: |
+                cd pr-issues-title-check
                 npm run all
 
     test-action:
