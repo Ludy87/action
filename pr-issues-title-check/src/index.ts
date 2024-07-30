@@ -85,7 +85,7 @@ async function run(): Promise<void> {
 async function issues(
     client: InstanceType<typeof GitHub>,
     actor: string,
-    issuesTitlePattern: string = "",
+    issuesTitlePattern: string = '',
     issuesPatternFlags: string,
     issuesLabels: string[],
     issuesComment: string,
@@ -121,10 +121,7 @@ async function issues(
 
     if (!regexPattern && !no_limit) {
         // Check min length
-        if (
-            !isNaN(issuesMinLen) &&
-            issuesTitle.length < issuesMinLen
-        ) {
+        if (!isNaN(issuesMinLen) && issuesTitle.length < issuesMinLen) {
             core.error(
                 `Issues title "${issues_title}" is smaller than min length specified - ${issuesMinLen}`,
             );
@@ -147,7 +144,7 @@ async function issues(
             Issues title "${issues_title}" is greater than max length specified - ${issuesMaxLen}`;
         }
 
-        core.info("kein Pattern angegeben!");
+        core.info('kein Pattern angegeben!');
     }
 
     const inputComment =
