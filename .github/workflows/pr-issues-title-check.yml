@@ -1,7 +1,7 @@
 name: PR & Issues Title Check
 
 on:
-    workflow_dispatch: 
+    workflow_dispatch:
     push:
         paths: pr-issues-title-check/**/*
 
@@ -21,4 +21,6 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@main
+            - run: |
+                cd pr-issues-title-check
             - uses: ./
