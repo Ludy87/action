@@ -1,4 +1,4 @@
-require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
+/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
 /***/ 7351:
@@ -29289,7 +29289,7 @@ function run() {
         }
     });
 }
-function issues(client, actor, issuesTitlePattern = "", issuesPatternFlags, issuesLabels, issuesComment, issuesMinLen, issuesMaxLen, issues_prefix) {
+function issues(client, actor, issuesTitlePattern = '', issuesPatternFlags, issuesLabels, issuesComment, issuesMinLen, issuesMaxLen, issues_prefix) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
         // Get client and context
@@ -29313,8 +29313,7 @@ function issues(client, actor, issuesTitlePattern = "", issuesPatternFlags, issu
         }
         if (!regexPattern && !no_limit) {
             // Check min length
-            if (!isNaN(issuesMinLen) &&
-                issuesTitle.length < issuesMinLen) {
+            if (!isNaN(issuesMinLen) && issuesTitle.length < issuesMinLen) {
                 core.error(`Issues title "${issues_title}" is smaller than min length specified - ${issuesMinLen}`);
                 lengths_fail += `
 
@@ -29329,7 +29328,7 @@ function issues(client, actor, issuesTitlePattern = "", issuesPatternFlags, issu
 
             Issues title "${issues_title}" is greater than max length specified - ${issuesMaxLen}`;
             }
-            core.info("kein Pattern angegeben!");
+            core.info('kein Pattern angegeben!');
         }
         const inputComment = issuesComment === ''
             ? `Hi @${actor}! ${DEFAULT_COMMENT}`
@@ -31358,4 +31357,3 @@ module.exports = parseParams
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=index.js.map
