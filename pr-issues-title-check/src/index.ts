@@ -85,7 +85,7 @@ async function run(): Promise<void> {
 async function issues(
     client: InstanceType<typeof GitHub>,
     actor: string,
-    issuesTitlePattern: string,
+    issuesTitlePattern: string = "",
     issuesPatternFlags: string,
     issuesLabels: string[],
     issuesComment: string,
@@ -109,21 +109,21 @@ async function issues(
     // Check if regex is provided
     const regexFlags = issuesPatternFlags;
     const regexPattern = issuesTitlePattern;
-    const regex = new RegExp(regexPattern, regexFlags);
-    const regexExistsInTitle = regex.test(issuesTitle);
+    const regex = regexPattern ? new RegExp(regexPattern, regexFlags) : null;
+    const regexExistsInTitle = regex ? regex.test(issuesTitle) : false;
 
     if (!regexPattern && (isNaN(issuesMinLen) || isNaN(issuesMaxLen))) {
         core.setFailed(
-            'issues_pattern or (issues_min_length && issues_min_length) müssen angegeben werden',
+            'issues_pattern or (issues_min_length and issues_max_length) must be specified',
         );
+        return;
     }
 
-    if (!regexPattern) {
+    if (!regexPattern && !no_limit) {
         // Check min length
         if (
             !isNaN(issuesMinLen) &&
-            issuesTitle.length < issuesMinLen &&
-            !no_limit
+            issuesTitle.length < issuesMinLen
         ) {
             core.error(
                 `Issues title "${issues_title}" is smaller than min length specified - ${issuesMinLen}`,
@@ -137,8 +137,7 @@ async function issues(
         if (
             !isNaN(issuesMaxLen) &&
             issuesMaxLen > 0 &&
-            issuesTitle.length > issuesMaxLen &&
-            !no_limit
+            issuesTitle.length > issuesMaxLen
         ) {
             core.error(
                 `Issues title "${issues_title}" is greater than max length specified - ${issuesMaxLen}`,
@@ -147,6 +146,8 @@ async function issues(
 
             Issues title "${issues_title}" is greater than max length specified - ${issuesMaxLen}`;
         }
+
+        core.info("kein Pattern angegeben!");
     }
 
     const inputComment =
@@ -167,11 +168,7 @@ async function issues(
             comment.user?.id === 41898282,
     );
 
-    if (
-        (!regexExistsInTitle || lengths_fail) &&
-        !no_limit &&
-        (isNaN(issuesMaxLen) || isNaN(issuesMinLen))
-    ) {
+    if ((!regexPattern && lengths_fail) || (!regexExistsInTitle && !no_limit)) {
         // add Labels from input
         if (issuesLabels.length > 0) {
             await client.rest.issues.addLabels({
