@@ -112,14 +112,14 @@ async function issues(
     const regex = regexPattern ? new RegExp(regexPattern, regexFlags) : null;
     const regexExistsInTitle = regex ? regex.test(issuesTitle) : false;
 
-    if (!regexPattern && (isNaN(issuesMinLen) || isNaN(issuesMaxLen))) {
+    if (regexPattern === '' && (isNaN(issuesMinLen) || isNaN(issuesMaxLen))) {
         core.setFailed(
             'issues_pattern or (issues_min_length and issues_max_length) must be specified',
         );
         return;
     }
 
-    if (!regexPattern && !no_limit) {
+    if (regexPattern === '' && !no_limit) {
         // Check min length
         if (!isNaN(issuesMinLen) && issuesTitle.length < issuesMinLen) {
             core.error(
@@ -199,7 +199,10 @@ async function issues(
 
         // Remove only labels from issuesLabels
         const labelNames = labels.data.map((label) => label.name.trim());
-        core.info(`Labels on issue: ${labelNames.join(', ')}`);
+        if (labelNames) {
+            core.info(`Labels on issue: ${labelNames.join(', ')}`);
+        }
+
         for (const label of issuesLabels) {
             if (labelNames.includes(label)) {
                 await client.rest.issues.removeLabel({
