@@ -17,7 +17,6 @@ inputs:
   issues_labels:
     description: 'Comma-separated list of labels to add if the title does not match the pattern'
     required: false
-    # default: 'Title invalid, Stale'
   issues_comment:
     description: 'Comment to add if the title does not match the pattern'
     required: false
