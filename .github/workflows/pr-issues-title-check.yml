@@ -1,6 +1,7 @@
 name: PR & Issues Title Check
 
 on:
+    workflow_dispatch: 
     push:
         paths: pr-issues-title-check/**/*
 
