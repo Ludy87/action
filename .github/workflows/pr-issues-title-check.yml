@@ -2,7 +2,7 @@ name: PR & Issues Title Check
 
 on:
     push:
-        paths: pr-issues-title-check
+        paths: pr-issues-title-check/**/*
 
 jobs:
     build:
