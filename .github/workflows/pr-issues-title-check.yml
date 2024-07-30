@@ -1,0 +1,21 @@
+name: PR & Issues Title Check
+
+on:
+    push:
+        paths: pr-issues-title-check
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@main
+            - run: |
+                npm ci
+            - run: |
+                npm run all
+
+    test-action:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@main
+            - uses: ./
