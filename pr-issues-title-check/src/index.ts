@@ -113,7 +113,7 @@ async function issues(
     const regex = new RegExp(regexPattern, regexFlags);
     const regexExistsInTitle = regex.test(issuesTitle);
 
-    if (!regexPattern && isNaN(issuesMinLen) && isNaN(issuesMaxLen)) {
+    if (!regexPattern && (isNaN(issuesMinLen) || isNaN(issuesMaxLen))) {
         core.setFailed(
             'issues_pattern or (issues_min_length && issues_min_length) müssen angegeben werden',
         );
