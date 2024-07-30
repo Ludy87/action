@@ -78,7 +78,7 @@ async function run(): Promise<void> {
             return;
         }
     } catch (error) {
-        core.error((error as Error)?.message ?? 'Unknown error');
+        core.setFailed((error as Error)?.message ?? 'Unknown error');
     }
 }
 
