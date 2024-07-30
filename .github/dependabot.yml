@@ -6,13 +6,31 @@
 version: 2
 updates:
   - package-ecosystem: "github-actions" # See documentation for possible values
-    directory: "/" # Location of package manifests
+    directory: "./merge" # Location of package manifests
+    schedule:
+      interval: daily
+      time: "19:45"
+      timezone: "Europe/Berlin"
+  - package-ecosystem: "github-actions" # See documentation for possible values
+    directory: "./pr-issues-title-check" # Location of package manifests
+    schedule:
+      interval: daily
+      time: "19:45"
+      timezone: "Europe/Berlin"
+  - package-ecosystem: "github-actions" # See documentation for possible values
+    directory: "./reviewer" # Location of package manifests
+    schedule:
+      interval: daily
+      time: "19:45"
+      timezone: "Europe/Berlin"
+  - package-ecosystem: "github-actions" # See documentation for possible values
+    directory: "./update_hacs_hassio" # Location of package manifests
     schedule:
       interval: daily
       time: "19:45"
       timezone: "Europe/Berlin"
   - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/" # Location of package manifests
+    directory: "./pr-issues-title-check" # Location of package manifests
     schedule:
       interval: daily
       time: "19:45"
