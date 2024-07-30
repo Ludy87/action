@@ -11,6 +11,7 @@ const GITHUB_PULL_REQUEST_TARGET_EVENT = 'pull_request_target';
 const GITHUB_ISSUES = 'issues';
 
 let no_limit = false;
+let lengths_fail = '';
 
 async function run(): Promise<void> {
     try {
@@ -104,8 +105,6 @@ async function issues(
             issuesTitle = issuesTitle.replace(title, '').trim();
         }
     });
-
-    let lengths_fail = '';
 
     // Check if regex is provided
     const regexFlags = issuesPatternFlags;
