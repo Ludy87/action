@@ -35,7 +35,7 @@ jobs:
   check-title:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Verify PR & Issues Title
         uses: Ludy87/pr-issues-title-verify@v1
