@@ -13,18 +13,18 @@ on:
     types:
       - closed
       - reopened
-      
+
 jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4
       - name: Check if Pull Request
         id: check_pr
         run: echo "is_pull_request=${{ github.event_name == 'pull_request' }}" >> $GITHUB_ENV
       - if: env.is_pull_request == 'true'
         name: Merge Label
-        uses: Ludy87/action/merge@v1.0.6
+        uses: Ludy87/action/merge@v1.0.7
 
 ```
 
@@ -44,8 +44,8 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4
       - name: Update hacs.json
-        uses: Ludy87/action/update_hacs_hassio@v1.0.6
+        uses: Ludy87/action/update_hacs_hassio@v1.0.7
 
 ```
