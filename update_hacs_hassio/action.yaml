@@ -76,7 +76,7 @@ runs:
 
     - name: Create Pull Request
       if: env.HACS_JSON_EXISTS == 'true' && steps.check_status.outputs.match != 'true'
-      uses: peter-evans/create-pull-request@v7.0.5
+      uses: peter-evans/create-pull-request@67ccf781d68cd99b580ae25a5c18a1cc84ffff1f # v7.0.6
       with:
         token: ${{ inputs.token }}
         commit-message: Update hacs.json file
@@ -101,6 +101,7 @@ runs:
         reviewers: ${{ inputs.reviewers }}
         draft: false
         delete-branch: true
+        sign-commits: true
 branding:
   color: gray-dark
   icon: map
