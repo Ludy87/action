@@ -35,3 +35,18 @@ updates:
       interval: daily
       time: "19:45"
       timezone: "Europe/Berlin"
+
+  - package-ecosystem: npm
+    directory: /pr-issues-title-check
+    schedule:
+      interval: daily
+
+  - package-ecosystem: docker
+    directory: /reviewer
+    schedule:
+      interval: daily
+
+  - package-ecosystem: pip
+    directory: /reviewer
+    schedule:
+      interval: daily
