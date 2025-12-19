@@ -24,7 +24,7 @@ jobs:
         run: echo "is_pull_request=${{ github.event_name == 'pull_request' }}" >> $GITHUB_ENV
       - if: env.is_pull_request == 'true'
         name: Merge Label
-        uses: Ludy87/action/merge@v1.0.8
+        uses: Ludy87/action/merge@v1.0.9
 
 ```
 
@@ -46,6 +46,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Update hacs.json
-        uses: Ludy87/action/update_hacs_hassio@v1.0.8
+        uses: Ludy87/action/update_hacs_hassio@v1.0.9
 
 ```
